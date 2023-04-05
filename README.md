@@ -1,0 +1,1 @@
+### Goboolean 프로젝트의 Configuration 리포지토리입니다.
