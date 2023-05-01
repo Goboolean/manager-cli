@@ -1,0 +1,80 @@
+http:
+  services:
+    fetch-server:
+      loadBalancer:
+        servers:
+          - url: "fetch-server.mulmuri.dev"
+        passHostHeader: true
+    qurey-server:
+      loadBalancer:
+        servers:
+          - url: "qurey-server.mulmuri.dev"
+        passHostHeader: true
+    command-server:
+      loadBalancer:
+        servers:
+          - url: "command-server.mulmuri.dev"
+        passHostHeader: true
+
+    model-server:
+      loadBalancer:
+        servers:
+          - url: "model-server.mulmuri.dev"
+        passHostHeader: true
+
+    ml-server:
+      loadBalancer:
+        servers:
+          - url: "ml-server.mulmuri.dev"
+        passHostHeader: true
+
+    manager-cli:
+      loadBalancer:
+        servers:
+          - url: "manager-cli.mulmuri.dev"
+        passHostHeader: true
+
+    client:
+      loadBalancer:
+        servers:
+          - url: "client.mulmuri.dev"
+        passHostHeader: true
+
+  routers:
+    fetch-server-router:
+      rule: "Host(`fetch-server.mulmuri.dev`)"
+      service: fetch-server
+      entryPoints:
+        - web
+    qurey-server-router:
+      rule: "Host(`query-server.mulmuri.dev`)"
+      service: query-server
+      entryPoints:
+        - web
+
+    command-server-router:
+      rule: "Host(`command-server.mulmuri.dev`)"
+      service: command-server
+      entryPoints:
+        - web
+
+    model-server-router:
+      rule: "Host(`model-server.mulmuri.dev`)"
+      service: model-server
+      entryPoints:
+        - web
+    ml-server-router:
+      rule: "Host(`ml-server.mulmuri.dev`)"
+      service: ml-server
+      entryPoints:
+        - web
+    manager-cli-router:
+      rule: "Host(`manager-cli.mulmuri.dev`)"
+      service: manager-cli
+      entryPoints:
+        - web
+    client-router:
+      rule: "Host(`client.mulmuri.dev`)"
+      service: client
+      entryPoints:
+        - web

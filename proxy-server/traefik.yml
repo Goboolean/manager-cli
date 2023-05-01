@@ -1,1 +1,26 @@
-# Write a code
+# traefik.yml
+
+# Enable the Dashboard and API
+api:
+  dashboard: true
+  insecure: true
+
+# Define the entry points
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+
+# Enable the Docker provider
+providers:
+  docker:
+    exposedByDefault: false
+  file:
+    directory: "./serverthings"
+    watch: true
