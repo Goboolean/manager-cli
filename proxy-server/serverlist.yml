@@ -5,11 +5,7 @@ http:
         servers:
           - url: "fetch-server.mulmuri.dev"
         passHostHeader: true
-    qurey-server:
-      loadBalancer:
-        servers:
-          - url: "qurey-server.mulmuri.dev"
-        passHostHeader: true
+
     command-server:
       loadBalancer:
         servers:
@@ -40,15 +36,22 @@ http:
           - url: "client.mulmuri.dev"
         passHostHeader: true
 
+    dashboard:
+      loadBalancer:
+        servers:
+          - url: "localhost/dashboard/#/"
+        passHostHeader: true
+
+    portainer:
+      loadBalancer:
+        servers:
+          -url: "portainer-portainer-1:9000"
+        passHostHeader: true
+
   routers:
     fetch-server-router:
       rule: "Host(`fetch-server.mulmuri.dev`)"
       service: fetch-server
-      entryPoints:
-        - web
-    qurey-server-router:
-      rule: "Host(`query-server.mulmuri.dev`)"
-      service: query-server
       entryPoints:
         - web
 
@@ -78,3 +81,19 @@ http:
       service: client
       entryPoints:
         - web
+
+    dashboard-router:
+      rule: "Host(`dashboard.mulmuri.dev`)"
+      service: dashboard
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+
+    portainer-router:
+      rule: "Host(`portainer.mulmuri.dev`)"
+      service: portainer
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
