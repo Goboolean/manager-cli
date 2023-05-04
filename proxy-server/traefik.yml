@@ -20,7 +20,24 @@ entryPoints:
 # Enable the Docker provider
 providers:
   docker:
+    endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
-  file:
-    directory: "./serverthings"
     watch: true
+  file:
+    filename: "/serverlist.yml"
+    watch: true
+
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: "/fullchain.pem"
+        keyFile: "/privkey.pem"
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: help@mulmuri.dev
+      storage: /acme.json
+      httpChallenge:
+        entryPoint: web

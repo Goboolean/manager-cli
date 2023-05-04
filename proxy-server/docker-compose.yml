@@ -2,21 +2,17 @@ version: '3'
 
 services:
   proxy-server:
-    # The official v2 Traefik docker image
     image: traefik:v2.10
-    # Enables the web UI and tells Traefik to listen to docker
     command:
       --configFile=/traefik.yml
       --api.insecure=true
+      --log.level=DEBUG
     ports:
-      # The HTTP port
       - "80:80"
-      # The HTTPS port
       - "443:443"
-      # The Web UI (enabled by --api.insecure=true)
       - "7001:8080"
     volumes:
-      # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik.yml:/traefik.yml
-      - ./serverthings:/serverthigs
+      - ./:/
+      - ${CERT_FILE_PATH}:/fullchain.pem
+      - ${KEY_FILE_PATH}:/privkey.pem

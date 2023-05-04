@@ -1,4 +1,0 @@
-tls:
-  certificates:
-    - certFile: "${CERTIFICATE_PATH}"
-      keyFile: "${CERTIFICATE_KEY_PATH}"
