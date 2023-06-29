@@ -1,6 +1,5 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -12,14 +11,18 @@ import (
 
 // regCmd represents the reg command
 var regCmd = &cobra.Command{
-	Use:   "reg",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "reg {stockID}-{Location}",
+	Short: "Add a stock metadata to DB ",
+	Long: `
+	{stockID} is the unique code of each stock.
+	{Location} is a country code defined in ISO 3166-1.
+	For example, country code of korea is "ko" and the united state is "us".
+	{Location} must be lower case.`,
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		return nil
+	},
+
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("reg called")
 	},

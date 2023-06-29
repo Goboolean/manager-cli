@@ -1,6 +1,5 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -12,14 +11,13 @@ import (
 
 // statusCmd represents the status command
 var statusCmd = &cobra.Command{
-	Use:   "status",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:   "status {stockID}-{Location}",
+	Short: "Show stock status",
+	Long: `
+	{stockID} is the unique code of each stock.
+	{Location} is a country code defined in ISO 3166-1.
+	For example, country code of korea is "ko" and the united state is "us".
+	{Location} must be lower case.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("status called")
 	},
