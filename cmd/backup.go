@@ -25,6 +25,10 @@ func init() {
 
 	rootCmd.AddCommand(backupCmd)
 
+	backupCmd.Flags().StringP("input", "i", "", "Target stock by [StockID]-[location] form")
+	backupCmd.Flags().StringP("output", "o", "", "Name of backup file")
+	backupCmd.Flags().String("before", "", "Back up data created before yyyy/mm/dd")
+
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
