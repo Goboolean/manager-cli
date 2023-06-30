@@ -16,7 +16,7 @@ type stockInputValidator struct {
 func (v *stockInputValidator) ValidateString(input string) error {
 
 	if matched, _ := regexp.MatchString(v.validPatten, input); !matched {
-		return errors.New("invalid pattern allowed pattern is [Stock Code]-[Location] example: 00001-kr")
+		return errors.New("invalid pattern")
 	}
 
 	return nil
