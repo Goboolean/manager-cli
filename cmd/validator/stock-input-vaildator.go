@@ -25,7 +25,6 @@ func (v *stockInputValidator) ValidateString(input string) error {
 func NewStockInputValidator() *stockInputValidator {
 	v := stockInputValidator{}
 	v.supportedLocation = []string{"ko", "us"}
-	// TODO: check required code form
-	v.validPatten = "[0-9, A-z]+-[a-z]{2}"
+	v.validPatten = "[0-9, A-Z]+-[a-z]{2}"
 	return &v
 }
