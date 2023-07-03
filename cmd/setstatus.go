@@ -16,6 +16,28 @@ var setstatusCmd = &cobra.Command{
 	Use:   "setstatus {status} {stockID}-{Location}",
 	Short: "Change the status of a specific stock",
 	Long:  ``,
+
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("insufficient args")
+		} else if len(args) > 2 {
+			return errors.New("too many args")
+		}
+
+		var validators [2]validator.Validator
+		validators[0] = validator.NewStatusValidator()
+		validators[1] = validator.NewStockValidator()
+
+		for i, v := range validators {
+			if res := v.ValidateString(args[i]); res != nil {
+				return res
+			}
+		}
+
+		return nil
+
+	},
+
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("setstatus called")
 	},

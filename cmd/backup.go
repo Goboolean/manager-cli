@@ -6,6 +6,8 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/Goboolean/manager-cli/cmd/validator"
+	"github.com/notEpsilon/go-pair"
 	"github.com/spf13/cobra"
 )
 
@@ -15,9 +17,39 @@ var backupCmd = &cobra.Command{
 	Short: "backup stock data",
 	Long:  ``,
 
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+
+		// Pair of string value and its appropriate validator
+		var ValueWithValidator [2]*pair.Pair[string, validator.Validator]
+
+		ValueWithValidator[0] = pair.New[string, validator.Validator](
+			cmd.Flag("input").Value.String(),
+			validator.NewStockValidator())
+
+		ValueWithValidator[1] = pair.New[string, validator.Validator](
+			cmd.Flag("before").Value.String(),
+			validator.NewDateValidator())
+
+		for _, p := range ValueWithValidator {
+			res := p.Second.ValidateString(p.First)
+
+			if p.First != "" && p.Second.ValidateString(p.First) != nil {
+				return res
+			}
+		}
+
+		return nil
+	},
+
 	Run: func(cmd *cobra.Command, args []string) {
 
-		fmt.Println("backup called")
+		//Test code to verify if the flag variable is successfully inputted.
+		fmt.Println("flag input: " + cmd.Flag("input").Value.String())
+		fmt.Println("flag output: " + cmd.Flag("output").Value.String())
+		fmt.Println("flag before: " + cmd.Flag("before").Value.String())
+
+		//todo: call domain code.
+		fmt.Println("backup started")
 	},
 }
 

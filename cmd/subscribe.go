@@ -4,12 +4,14 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"errors"
 	"fmt"
 
+	"github.com/Goboolean/manager-cli/cmd/validator"
 	"github.com/spf13/cobra"
 )
 
-// subscribeCmd represents the subscrible command
+// subscribeCmd represents the subscribe command
 var subscribeCmd = &cobra.Command{
 	Use:   "subscribe {stockID}-{Location}",
 	Short: "Subscribe stock data",
@@ -17,6 +19,21 @@ var subscribeCmd = &cobra.Command{
 	{Location} is a country code defined in ISO 3166-1.
 	For example, country code of korea is "ko" and the united state is "us".
 	{Location} must be lower case.`,
+
+	Args: func(cmd *cobra.Command, args []string) error {
+
+		stockValidator := validator.NewStockValidator()
+		var v validator.Validator = stockValidator
+
+		if len(args) > 1 {
+			return errors.New("too many arguments")
+		} else if len(args) < 1 {
+			return errors.New("arguments required")
+		} else {
+			return v.ValidateString(args[0])
+		}
+	},
+
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("subscribe called")
 	},

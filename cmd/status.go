@@ -4,8 +4,9 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
+	"errors"
 
+	"github.com/Goboolean/manager-cli/cmd/validator"
 	"github.com/spf13/cobra"
 )
 
@@ -18,8 +19,20 @@ var statusCmd = &cobra.Command{
 	{Location} is a country code defined in ISO 3166-1.
 	For example, country code of korea is "ko" and the united state is "us".
 	{Location} must be lower case.`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("insufficient args")
+		} else if len(args) > 1 {
+			return errors.New("too many args")
+		} else {
+			var v validator.Validator
+			v = validator.NewStockValidator()
+			return v.ValidateString(args[0])
+		}
+	},
+
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("status called")
+
 	},
 }
 
