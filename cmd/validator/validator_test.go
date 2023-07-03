@@ -13,7 +13,7 @@ func TestValidatorStockIn(t *testing.T) {
 
 	//init interface
 	var v Validator
-	stockV := NewStockInputValidator()
+	stockV := NewStockValidator()
 	v = stockV
 
 	//valid case

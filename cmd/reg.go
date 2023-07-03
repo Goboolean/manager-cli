@@ -4,8 +4,10 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"errors"
 	"fmt"
 
+	"github.com/Goboolean/manager-cli/cmd/validator"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +22,16 @@ var regCmd = &cobra.Command{
 	{Location} must be lower case.`,
 
 	Args: func(cmd *cobra.Command, args []string) error {
-		return nil
+
+		if len(args) < 1 {
+			return errors.New("insufficient args")
+		} else if len(args) > 1 {
+			return errors.New("too many args")
+		} else {
+			var v validator.Validator
+			v = validator.NewStockValidator()
+			return v.ValidateString(args[0])
+		}
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
