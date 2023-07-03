@@ -13,7 +13,8 @@ type dateValidator struct {
 func NewDateValidator() *dateValidator {
 
 	v := &dateValidator{
-		//valid pattern of date is yyyy/mm/dd
+		// Valid date: 3 decimal numbers separated by "/" like yyyy/mm/dd
+		// Valid range: year-[0000-9999], month-[00-12], day-[00-31]
 		validPatten: "^[0-9]{4}\\/(0[1-9]|1[012])\\/(0[1-9]|[12][0-9]|3[01])$",
 	}
 

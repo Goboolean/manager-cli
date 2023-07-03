@@ -17,7 +17,7 @@ func TestValidatorStockIn(t *testing.T) {
 	v = stockV
 
 	//valid case
-	var validTestCase = []string{"20214-ko", "AAPL-us", "aapl-us", "251422-us"}
+	var validTestCase = []string{"20214-kor", "AAPL-usa", "251422-usa"}
 
 	for _, i := range validTestCase {
 		if res := v.ValidateString(i); res != nil {
@@ -25,7 +25,7 @@ func TestValidatorStockIn(t *testing.T) {
 		}
 	}
 
-	var inValidTestCase = []string{"", "abecdefd", "12345", "12345a"}
+	var inValidTestCase = []string{"", "abecdefd", "12345", "12345a", "aapl-ko", "AAPL-us"}
 
 	for _, i := range inValidTestCase {
 		if res := v.ValidateString(i); res == nil {
