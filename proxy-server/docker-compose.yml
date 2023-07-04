@@ -1,18 +1,12 @@
 version: '3'
 
 services:
-  proxy-server:
-    image: traefik:v2.10
-    command:
-      --configFile=/traefik.yml
-      --api.insecure=true
-      --log.level=DEBUG
+  reverse-proxy:
+    container-name: reverse-proxy
+    image: traefik:v2.9
     ports:
       - "80:80"
-      - "443:443"
-      - "7001:8080"
+      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./:/
-      - ${CERT_FILE_PATH}:/fullchain.pem
-      - ${KEY_FILE_PATH}:/privkey.pem
+    command: --api.insecure=true --providers.docker
