@@ -5,7 +5,7 @@ type StatusValidator struct {
 	validPatten string
 }
 
-func NewStatusValidator() *StatusValidator {
+func NewStatusValidator() Validator {
 	v := &StatusValidator{
 		validPatten: "",
 	}

@@ -10,7 +10,7 @@ type dateValidator struct {
 	validPatten string
 }
 
-func NewDateValidator() *dateValidator {
+func NewDateValidator() Validator {
 
 	v := &dateValidator{
 		// Valid date: 3 decimal numbers separated by "/" like yyyy/mm/dd
@@ -23,7 +23,7 @@ func NewDateValidator() *dateValidator {
 
 func (v *dateValidator) ValidateString(input string) error {
 	if matched, _ := regexp.MatchString(v.validPatten, input); !matched {
-		return errors.New("invalid form of date")
+		return errors.New("invalid date")
 	}
 
 	return nil
