@@ -25,8 +25,7 @@ var statusCmd = &cobra.Command{
 		} else if len(args) > 1 {
 			return errors.New("too many args")
 		} else {
-			var v validator.Validator
-			v = validator.NewStockValidator()
+			v := validator.NewStockValidator()
 			return v.ValidateString(args[0])
 		}
 	},

@@ -31,10 +31,9 @@ var backupCmd = &cobra.Command{
 			validator.NewDateValidator())
 
 		for _, p := range ValueWithValidator {
-			res := p.Second.ValidateString(p.First)
-
+			err := p.Second.ValidateString(p.First)
 			if p.First != "" && p.Second.ValidateString(p.First) != nil {
-				return res
+				return err
 			}
 		}
 
