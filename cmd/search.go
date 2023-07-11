@@ -1,6 +1,5 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -12,14 +11,20 @@ import (
 
 // searchCmd represents the search command
 var searchCmd = &cobra.Command{
-	Use:   "search",
+	Use:   "search {name}",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+
+		if len(args) < 1 {
+			return ErrInsufficientArgs
+		} else if len(args) > 1 {
+			return ErrTooManyArgs
+		} else {
+			return nil
+		}
+	},
+
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("search called")
 	},

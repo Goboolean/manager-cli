@@ -6,8 +6,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/Goboolean/manager-cli/cmd/validator"
-	"github.com/notEpsilon/go-pair"
 	"github.com/spf13/cobra"
 )
 
@@ -18,24 +16,7 @@ var backupCmd = &cobra.Command{
 	Long:  ``,
 
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-
 		// Pair of string value and its appropriate validator
-		var ValueWithValidator [2]*pair.Pair[string, validator.Validator]
-
-		ValueWithValidator[0] = pair.New[string, validator.Validator](
-			cmd.Flag("input").Value.String(),
-			validator.NewStockValidator())
-
-		ValueWithValidator[1] = pair.New[string, validator.Validator](
-			cmd.Flag("before").Value.String(),
-			validator.NewDateValidator())
-
-		for _, p := range ValueWithValidator {
-			err := p.Second.ValidateString(p.First)
-			if p.First != "" && p.Second.ValidateString(p.First) != nil {
-				return err
-			}
-		}
 
 		return nil
 	},
@@ -56,7 +37,7 @@ func init() {
 
 	rootCmd.AddCommand(backupCmd)
 
-	backupCmd.Flags().StringP("input", "i", "", "Target stock by [StockID]-[location] form")
+	backupCmd.Flags().StringP("input", "i", "", "Target stock by [stockId]")
 	backupCmd.Flags().StringP("output", "o", "", "Name of backup file")
 	backupCmd.Flags().String("before", "", "Back up data created before yyyy/mm/dd")
 
