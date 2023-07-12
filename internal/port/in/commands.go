@@ -28,6 +28,10 @@ type BackupCmdPort interface {
 	BackupDataToRemote() error
 	// This method backups all trade data to local created before specific date
 	BackupDataToRemoteBefore(time time.Time) error
+	// This method backups data of a product to local
+	BackupProduct(id string)
+	// This method backups data of a product to local
+	BackupProductToRemote(id string)
 }
 
 // It has subscribe command
