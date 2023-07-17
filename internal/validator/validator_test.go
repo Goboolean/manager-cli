@@ -3,56 +3,68 @@ package validator
 import (
 	"os"
 	"testing"
+
+	"github.com/Goboolean/manager-cli/internal/domain/entity"
+	"github.com/notEpsilon/go-pair"
 )
 
 func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestValidatorStockIn(t *testing.T) {
+func TestNewProductIdValidator(t *testing.T) {
+	validator := NewProductIdValidator()
+	//First is value to test second is expected result
+	var testCases []*pair.Pair[string, bool]
 
-	//init interface
-	var v Validator
-	stockV := NewStockValidator()
-	v = stockV
+	//test first field validation
+	testCases = append(testCases, pair.New("coin.bitcoin.null", true))
+	testCases = append(testCases, pair.New("stock.apple.usd.", false))
+	testCases = append(testCases, pair.New("bark.bitcoin.usd.", false))
+	testCases = append(testCases, pair.New(".bitcoin.usd", false))
 
-	//valid case
-	var validTestCase = []string{"20214-kor", "AAPL-usa", "251422-usa"}
+	//test second field validation
+	testCases = append(testCases, pair.New("stock.apple.usd", true))
+	testCases = append(testCases, pair.New("stock.AAPL.usd", false))
+	testCases = append(testCases, pair.New("stock..USD", false))
 
-	for _, i := range validTestCase {
-		if res := v.ValidateString(i); res != nil {
-			t.Errorf("Fail test case:" + i)
+	//test third field validation
+	testCases = append(testCases, pair.New("stock.samsung.usa.", false))
+	testCases = append(testCases, pair.New("stock.samsung.korea", false))
+	testCases = append(testCases, pair.New("stock.samsung.", false))
+
+	testCases = append(testCases, pair.New("...", false))
+
+	for _, testCase := range testCases {
+		if validator.IsValid(testCase.First) != testCase.Second {
+			t.Errorf("Expected %v to be %v", testCase.First, testCase.Second)
 		}
 	}
 
-	var inValidTestCase = []string{"", "abecdefd", "12345", "12345a", "aapl-ko", "AAPL-us"}
-
-	for _, i := range inValidTestCase {
-		if res := v.ValidateString(i); res == nil {
-			t.Errorf("Fail test case:" + i)
-		}
-	}
 }
 
-func TestDateValidator(t *testing.T) {
-	var v Validator
-	dateV := NewDateValidator()
-	v = dateV
+func TestProductStatusValidator(t *testing.T) {
+	validator := NewProductStatusValidator()
 
-	//valid case
-	var validTestCase = []string{"2023/05/01", "2023/12/31", "2023/02/21", "1998/03/12", "2023/10/20", "2023/10/12"}
+	if validator == nil {
+		t.Error("Expected validator to be created")
+	}
 
-	for _, i := range validTestCase {
-		if res := v.ValidateString(i); res != nil {
-			t.Errorf("Fail test case:" + i)
+	var testCases []*pair.Pair[entity.ProductStatus, bool]
+
+	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: false, Stored: false, Transmitted: false}, true))
+	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: false, Stored: false, Transmitted: true}, false))
+	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: false, Stored: true, Transmitted: false}, false))
+	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: false, Stored: true, Transmitted: true}, false))
+	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: true, Stored: false, Transmitted: false}, true))
+	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: true, Stored: false, Transmitted: true}, true))
+	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: true, Stored: true, Transmitted: false}, true))
+	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: true, Stored: true, Transmitted: true}, true))
+
+	for _, testCase := range testCases {
+		if validator.IsValid(testCase.First) != testCase.Second {
+			t.Errorf("Expected %v to be %v", testCase.First, testCase.Second)
 		}
 	}
 
-	var inValidTestCase = []string{"2023/13/01", "2023/12/33/", "2023/2/2", "23/03/12", "2023/2/13"}
-
-	for _, i := range inValidTestCase {
-		if res := v.ValidateString(i); res == nil {
-			t.Errorf("Fail test case:" + i)
-		}
-	}
 }
