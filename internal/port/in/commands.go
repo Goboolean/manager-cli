@@ -65,9 +65,6 @@ type StatusCmdPort interface {
 	RemoveStatus(id string, desired entity.ProductStatus) error
 	// AddStatus adds a status(es) to a product identified by its ID.
 	AddStatus(id string, desired entity.ProductStatus) error
-}
-
-type statusCmdPort interface {
-	// get status of a product and returns status encoded in
+	// get status of a product and returns status entity object
 	GetStatus(id string) (entity.ProductStatus, error)
 }
