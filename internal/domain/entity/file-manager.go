@@ -1,6 +1,6 @@
 package entity
 
 type FileManager struct {
-	name string // File name
-	path string // File path
+	Name string // File name
+	Path string // File path
 }
