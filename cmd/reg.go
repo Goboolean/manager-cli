@@ -46,7 +46,6 @@ func init() {
 	regCmd.MarkFlagRequired("type")
 	regCmd.MarkFlagRequired("code")
 	regCmd.MarkFlagRequired("name")
-	regCmd.MarkFlagRequired("location")
 
 	// Here you will define your flags and configuration settings.
 
