@@ -21,21 +21,21 @@ type RegCmdPort interface {
 
 type BackupCmdPort interface {
 	// This method backups all trade data to local
-	BackupData() (entity.FileManager, error)
+	BackupData() error
 	// This method backups all trade data to local created before specific date
-	BackupDataBefore(time time.Time) (entity.FileManager, error)
+	BackupDataBefore(time time.Time) error
 	// This method backups all trade data to Remote
 	BackupDataToRemote() error
 	// This method backups all trade data to local created before specific date
 	BackupDataToRemoteBefore(time time.Time) error
 	// This method backups data of a product to local
-	BackupProduct(id string)
+	BackupProduct(id string) error
 	// This method backups data of a product to local
-	BackupProductToRemote(id string)
+	BackupProductToRemote(id string) error
 }
 
 // It has subscribe command
-type SetstatusCmdPort interface {
+type StatusCmdPort interface {
 
 	/*
 		TODO: Move these methods to adaptor
