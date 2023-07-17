@@ -17,7 +17,7 @@ type MetadataRepositoryPort interface {
 
 type StatusPort interface {
 	// This method returns status of a product
-	GetStatus(id string) entity.ProductStatus
+	GetStatus(id string) (entity.ProductStatus, error)
 	// This method changes status of a product by "status" val
 	SetStatus(id string, status entity.ProductStatus) error
 }
