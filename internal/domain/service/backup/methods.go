@@ -6,8 +6,7 @@ import (
 )
 
 func (s BackupService) BackupData() error {
-	ctx, _ := context.WithCancel(context.Background())
-	s.tradeRepo.Begin(ctx)
+	s.tradeRepo.Begin(context.Background())
 
 	_, err := s.tradeRepo.DumpTradeRepo()
 
@@ -21,8 +20,7 @@ func (s BackupService) BackupData() error {
 }
 
 func (s BackupService) BackupDataBefore(time time.Time) error {
-	ctx, _ := context.WithCancel(context.Background())
-	s.tradeRepo.Begin(ctx)
+	s.tradeRepo.Begin(context.Background())
 
 	_, err := s.tradeRepo.DumpTradeRepoBefore(time)
 
@@ -36,8 +34,7 @@ func (s BackupService) BackupDataBefore(time time.Time) error {
 }
 
 func (s BackupService) BackupDataToRemote() error {
-	ctx, _ := context.WithCancel(context.Background())
-	s.tradeRepo.Begin(ctx)
+	s.tradeRepo.Begin(context.Background())
 
 	f, err := s.tradeRepo.DumpTradeRepo()
 	defer s.fileRemover.RemoveFile(f)
@@ -60,8 +57,7 @@ func (s BackupService) BackupDataToRemote() error {
 }
 
 func (s BackupService) BackupDataToRemoteBefore(time time.Time) error {
-	ctx, _ := context.WithCancel(context.Background())
-	s.tradeRepo.Begin(ctx)
+	s.tradeRepo.Begin(context.Background())
 
 	f, err := s.tradeRepo.DumpTradeRepoBefore(time)
 	defer s.fileRemover.RemoveFile(f)
@@ -83,8 +79,7 @@ func (s BackupService) BackupDataToRemoteBefore(time time.Time) error {
 }
 
 func (s BackupService) BackupProduct(id string) error {
-	ctx, _ := context.WithCancel(context.Background())
-	s.tradeRepo.Begin(ctx)
+	s.tradeRepo.Begin(context.Background())
 
 	_, err := s.tradeRepo.DumpProduct(id)
 
@@ -100,8 +95,7 @@ func (s BackupService) BackupProduct(id string) error {
 
 func (s BackupService) BackupProductToRemote(id string) error {
 
-	ctx, _ := context.WithCancel(context.Background())
-	s.tradeRepo.Begin(ctx)
+	s.tradeRepo.Begin(context.Background())
 
 	f, err := s.tradeRepo.DumpProduct(id)
 	defer s.fileRemover.RemoveFile(f)
