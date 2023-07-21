@@ -6,7 +6,7 @@ import (
 
 type ProductIdValidator struct {
 	//Regular expression of valid product id
-	validPatterns []string //pattern: {product type}.{product name}.[location]
+	validPatterns []string //pattern: {product type}.{product name}.{location}
 }
 
 func NewProductIdValidator() Validator {

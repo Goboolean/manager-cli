@@ -7,6 +7,8 @@ import (
 )
 
 type MetadataRepositoryPort interface {
+	TransactorPort
+
 	// This method gets unique id of a product which can be hash, UUID and so on...
 	GetProductId(code string) (string, error)
 	// This method gets full metadata of a product
