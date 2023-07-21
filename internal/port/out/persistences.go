@@ -25,6 +25,8 @@ type StatusPort interface {
 }
 
 type TradeRepositoryPort interface {
+	TransactorPort
+
 	// This method dumps trade data from trade data repository
 	DumpTradeRepo() (entity.FileManager, error)
 	// This method dumps trade data created before a specific date

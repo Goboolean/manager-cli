@@ -6,15 +6,13 @@ type BackupService struct {
 	tradeRepo   out.TradeRepositoryPort
 	transmit    out.DataTransmitterPort
 	fileRemover out.FilePort
-	tx          out.TransactorPort
 }
 
 // TODO: Find good name for field and parm
-func New(tradeRepoPort out.TradeRepositoryPort, transmitter out.DataTransmitterPort, fileRemover out.FilePort, tx out.TransactorPort) *BackupService {
+func New(tradeRepoPort out.TradeRepositoryPort, transmitter out.DataTransmitterPort, fileRemover out.FilePort) *BackupService {
 	return &BackupService{
 		tradeRepo:   tradeRepoPort,
 		transmit:    transmitter,
 		fileRemover: fileRemover,
-		tx:          tx,
 	}
 }
