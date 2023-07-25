@@ -12,7 +12,7 @@ type ProductIdValidator struct {
 func NewProductIdValidator() Validator {
 
 	return &ProductIdValidator{
-		validPatterns: []string{"^stock.[a-z]*.[a-z]{3}$", "^coin.[a-z]*$.null"},
+		validPatterns: []string{"^stock.[a-z]*.[a-z]{3}$", "^coin.[a-z]*.null$"},
 	}
 }
 
