@@ -4,37 +4,26 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"errors"
 	"fmt"
 
-	"github.com/Goboolean/manager-cli/cmd/validator"
 	"github.com/spf13/cobra"
 )
 
 // setstatusCmd represents the setstatus command
 var setstatusCmd = &cobra.Command{
-	Use:   "setstatus {status} {stockID}-{Location}",
+	Use:   "setstatus {status} {stockId}",
 	Short: "Change the status of a specific stock",
 	Long:  ``,
 
 	Args: func(cmd *cobra.Command, args []string) error {
+
 		if len(args) < 2 {
-			return errors.New("insufficient args")
+			return ErrInsufficientArgs
 		} else if len(args) > 2 {
-			return errors.New("too many args")
+			return ErrTooManyArgs
+		} else {
+			return nil
 		}
-
-		var validators [2]validator.Validator
-		validators[0] = validator.NewStatusValidator()
-		validators[1] = validator.NewStockValidator()
-
-		for i, v := range validators {
-			if res := v.ValidateString(args[i]); res != nil {
-				return res
-			}
-		}
-
-		return nil
 
 	},
 

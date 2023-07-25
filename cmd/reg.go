@@ -7,30 +7,24 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Goboolean/manager-cli/cmd/validator"
 	"github.com/spf13/cobra"
 )
 
 // regCmd represents the reg command
 var regCmd = &cobra.Command{
-	Use:   "reg {stockID}-{Location}",
-	Short: "Add a stock metadata to DB ",
-	Long: `
-	{stockID} is the unique code of each stock.
-	{Location} is a country code defined in ISO 3166-1.
-	For example, country code of korea is "ko" and the united state is "us".
-	{Location} must be lower case.`,
+	Use:   "reg ",
+	Short: "Add a stock metadata to DB",
+	Long:  ``,
 
-	Args: func(cmd *cobra.Command, args []string) error {
+	PreRunE: func(cmd *cobra.Command, args []string) error {
 
-		if len(args) < 1 {
-			return errors.New("insufficient args")
-		} else if len(args) > 1 {
-			return errors.New("too many args")
-		} else {
-			v := validator.NewStockValidator()
-			return v.ValidateString(args[0])
+		isAuto, _ := cmd.Flags().GetBool("auto")
+		exchange, _ := cmd.Flags().GetString("exchange")
+
+		if !isAuto && exchange == "" {
+			return errors.New("expected \"exchange\" flag")
 		}
+		return nil
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
@@ -40,6 +34,18 @@ var regCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(regCmd)
+
+	regCmd.Flags().StringP("type", "t", "", "Type of product available: stock, coin")
+	regCmd.Flags().String("code", "", "Product code used in one's market")
+	regCmd.Flags().String("name", "", "English name of product")
+	regCmd.Flags().String("location", "", "Country code defined in ISO 3166-1.")
+	regCmd.Flags().String("exchange", "", "Human readable exchange name")
+
+	regCmd.Flags().BoolP("auto", "a", false, "fetch stock metadata automatically")
+
+	regCmd.MarkFlagRequired("type")
+	regCmd.MarkFlagRequired("code")
+	regCmd.MarkFlagRequired("name")
 
 	// Here you will define your flags and configuration settings.
 

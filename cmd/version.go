@@ -15,7 +15,7 @@ var versionCmd = &cobra.Command{
 	Short: "Show version of manager-cli",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("version called")
+		fmt.Println("version is 0.0.0")
 	},
 }
 

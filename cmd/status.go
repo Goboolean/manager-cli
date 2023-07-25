@@ -4,29 +4,25 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"errors"
-
-	"github.com/Goboolean/manager-cli/cmd/validator"
 	"github.com/spf13/cobra"
 )
 
 // statusCmd represents the status command
 var statusCmd = &cobra.Command{
-	Use:   "status {stockID}-{Location}",
+	Use:   "status {stockId}",
 	Short: "Show stock status",
 	Long: `
 	{stockID} is the unique code of each stock.
-	{Location} is a country code defined in ISO 3166-1.
 	For example, country code of korea is "ko" and the united state is "us".
 	{Location} must be lower case.`,
+
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			return errors.New("insufficient args")
+			return ErrInsufficientArgs
 		} else if len(args) > 1 {
-			return errors.New("too many args")
+			return ErrTooManyArgs
 		} else {
-			v := validator.NewStockValidator()
-			return v.ValidateString(args[0])
+			return nil
 		}
 	},
 
