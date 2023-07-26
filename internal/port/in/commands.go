@@ -37,28 +37,6 @@ type BackupCmdPort interface {
 // It has subscribe command
 type StatusCmdPort interface {
 
-	/*
-		TODO: Move these methods to adaptor
-
-		// This method set status of a stock to desired state encoded in 3bit code
-		// First bit represents whether reliable(1) or not(0), and Second bit does whether storing or not,
-		// and Third bit whether transmitting or not
-		SetstatusByInt(id string, desiredStatus int) error
-
-		// This method manipulates status according to desiredAction.
-		// desiredAction consist of operator and status(es)
-		// The statues(es) is appended after the operator to indicate the desired action
-		// Available operators
-		//  -: remove status(es)
-		//  +: add status(es)
-		//  =: set status(es)
-		// Available statuses
-		//  r: reliable
-		//  s: stored
-		//  t: transmitted
-		SetstatusByString(id string, desiredAction string) error
-	*/
-
 	// SetStatus updates the status(es) of a product identified by its ID to desired status.
 	SetStatus(id string, desired entity.ProductStatus) error
 	// RemoveStatus removes status(es) from a product identified by its ID.
