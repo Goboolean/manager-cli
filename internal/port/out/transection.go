@@ -1,10 +1,14 @@
 package out
 
-import "context"
+import (
+	"context"
+
+	"github.com/Goboolean/manager-cli/internal/domain/entity"
+)
 
 type TransactorPort interface {
-	Begin(ctx context.Context) error
-	Commit() error
-	Rollback() error
-	Context() context.Context
+	CreateNewSession(ctx context.Context) (entity.Session, error)
+	Begin(entity.Session) error
+	Commit(entity.Session) error
+	Rollback(entity.Session) error
 }
