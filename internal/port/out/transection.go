@@ -7,8 +7,8 @@ import (
 )
 
 type TransactorPort interface {
-	CreateNewSession(ctx context.Context) (entity.Session, error)
-	Begin(entity.Session) error
-	Commit(entity.Session) error
-	Rollback(entity.Session) error
+	CreateNewSession(ctx context.Context) (*entity.Session, error)
+	Begin(*entity.Session) error
+	Commit(*entity.Session) error
+	Rollback(*entity.Session) error
 }
