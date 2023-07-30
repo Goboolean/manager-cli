@@ -1,4 +1,4 @@
-package entity
+package session
 
 import (
 	"context"
@@ -24,12 +24,4 @@ func New(ctx context.Context) *Session {
 		id:  rand.Int(),
 		ctx: ctx,
 	}
-}
-
-func (s *Session) GetId() int {
-	return s.id
-}
-
-func (s *Session) GetContext() context.Context {
-	return s.ctx
 }
