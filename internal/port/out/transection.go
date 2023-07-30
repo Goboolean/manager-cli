@@ -7,8 +7,9 @@ import (
 )
 
 type TransactorPort interface {
-	CreateNewSession(ctx context.Context) *session.Session
-	Begin(*session.Session) error
-	Commit(*session.Session) error
-	Rollback(*session.Session) error
+	// Create new transaction and begin it.
+	// Returns a session object to manage each session of the transaction.
+	CreateTxSession(ctx context.Context) (*session.Session, error)
+	Commit(session *session.Session) error
+	Rollback(session *session.Session) error
 }
