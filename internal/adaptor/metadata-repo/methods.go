@@ -22,6 +22,8 @@ func (m *MetadataRepositoryAdaptor) isExpiredSession(session *session.Session) b
 
 }
 
+// This method creates new session entity object, transaction, and queries with transaction.
+// In addition, it inserts transaction and query object to Map of each
 func (m *MetadataRepositoryAdaptor) CreateTxSession(ctx context.Context) (*session.Session, error) {
 
 	instance := session.New(ctx)
@@ -38,6 +40,7 @@ func (m *MetadataRepositoryAdaptor) CreateTxSession(ctx context.Context) (*sessi
 
 func (m *MetadataRepositoryAdaptor) Commit(session *session.Session) error {
 
+	// Check if givin session is already expired
 	if m.isExpiredSession(session) {
 		return errExpiredSession
 	}
@@ -47,6 +50,7 @@ func (m *MetadataRepositoryAdaptor) Commit(session *session.Session) error {
 		return err
 	}
 
+	// Expire session
 	delete(m.transactions, session.GetId())
 	delete(m.queries, session.GetId())
 	return nil
@@ -54,6 +58,7 @@ func (m *MetadataRepositoryAdaptor) Commit(session *session.Session) error {
 
 func (m *MetadataRepositoryAdaptor) Rollback(session *session.Session) error {
 
+	// Check if givin session is already expired
 	if m.isExpiredSession(session) {
 		return errExpiredSession
 	}
@@ -62,10 +67,16 @@ func (m *MetadataRepositoryAdaptor) Rollback(session *session.Session) error {
 	if err != nil {
 		return err
 	}
+
+	// Expire session
 	delete(m.transactions, session.GetId())
 	delete(m.queries, session.GetId())
 	return nil
 }
+
+// Commit() and Rollback() methods expire session as well commit or rollback transaction
+// because session leak can cause if expiring session is separated to another method,
+// and user forgets call that method.
 
 // This method gets unique id of a product which can be hash, UUID and so on...
 func (m *MetadataRepositoryAdaptor) GetProductId(session *session.Session, code string) (string, error) {
