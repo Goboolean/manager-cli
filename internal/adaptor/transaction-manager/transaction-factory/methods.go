@@ -21,6 +21,6 @@ func New(psqlDb *rdbms.PSQL, mongoDb *mongo.DB) *TransactionFactory {
 	}
 }
 
-func (f *TransactionFactory) BuildTransaction(ctx context.Context) (out.Transactor, error) {
+func (f *TransactionFactory) BuildTransaction(ctx context.Context) (out.TransactorPort, error) {
 	return transactionManager.New(ctx, f.psqldb, f.mongodb)
 }
