@@ -3,18 +3,19 @@ package out
 import (
 	"time"
 
+	transactionManager "github.com/Goboolean/manager-cli/internal/adaptor/transaction-manager"
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
 )
 
 type MetadataRepositoryPort interface {
-	TransactorPort
-
+	// This method get list of stored product
+	GetStoredProductList(transaction transactionManager.TransactionExtractor) ([]string, error)
 	// This method gets unique id of a product which can be hash, UUID and so on...
-	GetProductId(code string) (string, error)
+	GetProductId(transaction transactionManager.TransactionExtractor, code string) (string, error)
 	// This method gets full metadata of a product
-	GetProductMeta(id string) (entity.ProductMeta, error)
+	GetProductMeta(transaction transactionManager.TransactionExtractor, id string) (entity.ProductMeta, error)
 	// This method stores metadata to metadata repository which can be mysql, radius so on...
-	StoreProductMeta(meta entity.ProductMeta) error
+	StoreProductMeta(transaction transactionManager.TransactionExtractor, meta entity.ProductMeta) error
 }
 
 type StatusPort interface {
