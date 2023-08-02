@@ -7,17 +7,19 @@ import (
 )
 
 // This method automatically registers a product by accepting the product's code and location information.
-func (s RegistrationService) RegisterProduct(meta entity.ProductMeta) error {
+func (s *RegistrationService) RegisterProduct(meta entity.ProductMeta) error {
 
-	s.metaRepo.Begin(context.Background())
+	var err error
+	transactor := s.txCreator.CreateTransaction(context.TODO())
 
-	err := s.metaRepo.StoreProductMeta(meta)
+	err = s.metaRepo.StoreProductMeta(transactor.TransactionExtractor(), meta)
 
 	if err != nil {
-		s.metaRepo.Rollback()
+		err = transactor.Rollback()
 		return err
-	} else {
-		s.metaRepo.Commit()
-		return nil
 	}
+
+	err = transactor.Commit()
+	return err
+
 }
