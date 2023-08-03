@@ -1,19 +1,24 @@
 package metadataRepo
 
 import (
-	"context"
 	"database/sql"
+	"errors"
 	"os"
 
 	"github.com/Goboolean/shared/pkg/rdbms"
 	"github.com/Goboolean/shared/pkg/resolver"
 )
 
+var errExpiredSession = errors.New("session: Commit or Rollback expired session")
+
 type MetadataRepositoryAdaptor struct {
-	db  *rdbms.PSQL
-	q   *rdbms.Queries
-	ctx context.Context
-	tx  *sql.Tx
+	db *rdbms.PSQL
+
+	// Maps session id to query
+	queries map[int]*rdbms.Queries
+
+	// Maps session id to transaction
+	transactions map[int]*sql.Tx
 }
 
 func New() *MetadataRepositoryAdaptor {
@@ -29,7 +34,8 @@ func New() *MetadataRepositoryAdaptor {
 	psqlInstance := rdbms.NewDB(c)
 
 	return &MetadataRepositoryAdaptor{
-		db: psqlInstance,
-		q:  psqlInstance.NewQueries(),
+		db:           psqlInstance,
+		queries:      make(map[int]*rdbms.Queries),
+		transactions: make(map[int]*sql.Tx),
 	}
 }

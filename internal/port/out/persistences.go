@@ -4,17 +4,18 @@ import (
 	"time"
 
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
+	"github.com/Goboolean/manager-cli/internal/domain/entity/session"
 )
 
 type MetadataRepositoryPort interface {
 	TransactorPort
 
 	// This method gets unique id of a product which can be hash, UUID and so on...
-	GetProductId(code string) (string, error)
+	GetProductId(session *session.Session, code string) (string, error)
 	// This method gets full metadata of a product
-	GetProductMeta(id string) (entity.ProductMeta, error)
+	GetProductMeta(session *session.Session, id string) (entity.ProductMeta, error)
 	// This method stores metadata to metadata repository which can be mysql, radius so on...
-	StoreProductMeta(meta entity.ProductMeta) error
+	StoreProductMeta(session *session.Session, meta entity.ProductMeta) error
 }
 
 type StatusPort interface {
