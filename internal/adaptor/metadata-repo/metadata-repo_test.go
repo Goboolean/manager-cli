@@ -8,6 +8,8 @@ import (
 
 	metadataRepo "github.com/Goboolean/manager-cli/internal/adaptor/metadata-repo"
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
+	"github.com/Goboolean/shared/pkg/rdbms"
+	"github.com/Goboolean/shared/pkg/resolver"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -19,7 +21,15 @@ func TestMain(m *testing.M) {
 	os.Chdir("/home/lsjtop10/projects/goboolean/manager-cli")
 	godotenv.Load()
 
-	metaRepoAdaptor = metadataRepo.New()
+	metaRepoAdaptor = metadataRepo.New(rdbms.NewDB(
+		&resolver.ConfigMap{
+			"USER":     os.Getenv("PSQL_USER"),
+			"PASSWORD": os.Getenv("PSQL_PASS"),
+			"HOST":     os.Getenv("PSQL_HOST"),
+			"PORT":     os.Getenv("PSQL_PORT"),
+			"DATABASE": os.Getenv("PSQL_DATABASE"),
+		}))
+
 	code := m.Run()
 	//metaRepoAdaptor.Close()
 
@@ -31,12 +41,13 @@ func TestInsertMetaRollback(t *testing.T) {
 
 	var err error
 
-	err = metaRepoAdaptor.Begin(context.Background())
+	session, err := metaRepoAdaptor.CreateTxSession(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	err = metaRepoAdaptor.StoreProductMeta(
+		session,
 		entity.ProductMeta{
 			Id:          "stock.apple.usa",
 			Name:        "apple",
@@ -51,11 +62,19 @@ func TestInsertMetaRollback(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	metaRepoAdaptor.Rollback()
+	metaRepoAdaptor.Rollback(session)
 
-	if str, _ := metaRepoAdaptor.GetProductId("AAPL"); str == "stock.apple.usa" {
+	session, err = metaRepoAdaptor.CreateTxSession(context.Background())
+
+	if err != nil {
+		panic(err)
+	}
+
+	if str, _ := metaRepoAdaptor.GetProductId(session, "AAPL"); str == "stock.apple.usa" {
 		t.Error("Fail!!!")
 	}
+
+	metaRepoAdaptor.Commit(session)
 }
 
 // WARN: DO NOT EXECUTE THIS TEST ON THE PRODUCTION DB BECAUSE IT WILL CAUSE DATA POLLUTION
@@ -64,12 +83,13 @@ func TestInsertMetaCommitted(t *testing.T) {
 
 	var err error
 
-	err = metaRepoAdaptor.Begin(context.Background())
+	session, err := metaRepoAdaptor.CreateTxSession(context.Background())
 	if err != nil {
-		t.Error(err)
+		log.Fatal(err)
 	}
 
 	err = metaRepoAdaptor.StoreProductMeta(
+		session,
 		entity.ProductMeta{
 			Id:          "stock.apple.usa",
 			Name:        "apple",
@@ -84,12 +104,15 @@ func TestInsertMetaCommitted(t *testing.T) {
 		t.Error(err)
 	}
 
-	metaRepoAdaptor.Commit()
+	metaRepoAdaptor.Commit(session)
 
-	metaRepoAdaptor.Begin(context.Background())
+	session, err = metaRepoAdaptor.CreateTxSession(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	var str string
-	str, err = metaRepoAdaptor.GetProductId("AAPL")
+	str, err = metaRepoAdaptor.GetProductId(session, "AAPL")
 	if err != nil {
 		t.Error(err)
 	}
@@ -97,15 +120,15 @@ func TestInsertMetaCommitted(t *testing.T) {
 	if str != "stock.apple.usa" {
 		t.Error("Fail to insert")
 	}
-	metaRepoAdaptor.Commit()
+	metaRepoAdaptor.Commit(session)
 }
 
 func TestGetProductMeta(t *testing.T) {
 
-	metaRepoAdaptor.Begin(context.Background())
-	defer metaRepoAdaptor.Commit()
+	session, err := metaRepoAdaptor.CreateTxSession(context.Background())
+	defer metaRepoAdaptor.Commit(session)
 
-	meta, err := metaRepoAdaptor.GetProductMeta("stock.apple.usa")
+	meta, err := metaRepoAdaptor.GetProductMeta(session, "stock.apple.usa")
 
 	if err != nil {
 		t.Error(err)
