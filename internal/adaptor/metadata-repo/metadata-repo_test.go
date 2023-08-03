@@ -8,6 +8,8 @@ import (
 
 	metadataRepo "github.com/Goboolean/manager-cli/internal/adaptor/metadata-repo"
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
+	"github.com/Goboolean/shared/pkg/rdbms"
+	"github.com/Goboolean/shared/pkg/resolver"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -19,7 +21,15 @@ func TestMain(m *testing.M) {
 	os.Chdir("/home/lsjtop10/projects/goboolean/manager-cli")
 	godotenv.Load()
 
-	metaRepoAdaptor = metadataRepo.New()
+	metaRepoAdaptor = metadataRepo.New(rdbms.NewDB(
+		&resolver.ConfigMap{
+			"USER":     os.Getenv("PSQL_USER"),
+			"PASSWORD": os.Getenv("PSQL_PASS"),
+			"HOST":     os.Getenv("PSQL_HOST"),
+			"PORT":     os.Getenv("PSQL_PORT"),
+			"DATABASE": os.Getenv("PSQL_DATABASE"),
+		}))
+
 	code := m.Run()
 	//metaRepoAdaptor.Close()
 
