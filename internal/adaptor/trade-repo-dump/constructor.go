@@ -8,8 +8,6 @@ type TradeDumpAdaptor struct {
 	Host     string
 	Port     string
 	Database string
-
-	baseOutDir string
 }
 
 func New(c *resolver.ConfigMap, outDir string) *TradeDumpAdaptor {
@@ -45,7 +43,5 @@ func New(c *resolver.ConfigMap, outDir string) *TradeDumpAdaptor {
 		Host:     host,
 		Port:     port,
 		Database: database,
-
-		baseOutDir: outDir,
 	}
 }

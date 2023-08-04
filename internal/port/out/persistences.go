@@ -25,15 +25,10 @@ type StatusPort interface {
 	SetStatus(id string, status entity.ProductStatus) error
 }
 
-type TradeRepositoryPort interface {
-	TransactorPort
+type TradeDumperPort interface {
 
-	// This method dumps trade data from trade data repository
-	DumpTradeRepo() (entity.FileManager, error)
-	// This method dumps trade data created before a specific date
-	DumpTradeRepoBefore(date time.Time) (entity.FileManager, error)
-	// This method dumps trade data of specific product
-	DumpProduct(id string) (entity.FileManager, error)
 	// This method dumps trade data of specific product created before time
-	DumpProductBefore(id string, time time.Time) (entity.FileManager, error)
+	DumpProductBefore(id string, outDir string, time time.Time) ([]entity.FileManager, error)
+	// This method dumps trade data of specific product created between time
+	DumpProductBetween(id string, outDir string, from, to time.Time) ([]entity.FileManager, error)
 }

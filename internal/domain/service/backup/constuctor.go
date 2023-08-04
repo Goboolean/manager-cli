@@ -2,17 +2,37 @@ package backup
 
 import "github.com/Goboolean/manager-cli/internal/port/out"
 
+// format date to yyyy-mm-dd_hh:mm:ss
+const toolTimeFormatString = "2006-01-02_15:04:05"
+
+const backupTypeFull = "f"
+const backupTypeDifferential = "d"
+const backupTypeSpecific = "s"
+
 type BackupService struct {
-	tradeRepo   out.TradeRepositoryPort
-	transmit    out.DataTransmitterPort
-	fileRemover out.FilePort
+	txCreator    out.TransactionCreator
+	tradeDumper  out.TradeDumperPort
+	metadataRepo out.MetadataRepositoryPort
+	transmitter  out.DataTransmitterPort
+	fileRemover  out.FilePort
+	backUpDir    string
 }
 
 // TODO: Find good name for field and parm
-func New(tradeRepoPort out.TradeRepositoryPort, transmitter out.DataTransmitterPort, fileRemover out.FilePort) *BackupService {
+func New(
+	transactionCreator out.TransactionCreator,
+	tradeRepoPort out.TradeDumperPort,
+	metadataRepoPort out.MetadataRepositoryPort,
+	transmitter out.DataTransmitterPort,
+	fileRemover out.FilePort,
+	outDir string) *BackupService {
+
 	return &BackupService{
-		tradeRepo:   tradeRepoPort,
-		transmit:    transmitter,
-		fileRemover: fileRemover,
+		txCreator:    transactionCreator,
+		tradeDumper:  tradeRepoPort,
+		metadataRepo: metadataRepoPort,
+		transmitter:  transmitter,
+		fileRemover:  fileRemover,
+		backUpDir:    outDir,
 	}
 }

@@ -5,7 +5,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
 )
@@ -25,26 +24,6 @@ func (a *CommandAdaptor) BackupProduct(id string) error {
 
 func (a *CommandAdaptor) BackupProductToRemote(id string) error {
 	return a.backUpService.BackupProductToRemote(id)
-}
-
-func (a *CommandAdaptor) BackupAllBefore(date string) error {
-	t, err := time.Parse("2006/01/02", date)
-
-	if err != nil {
-		return err
-	}
-
-	return a.backUpService.BackupDataBefore(t)
-}
-
-func (a *CommandAdaptor) BackupAllToRemoteBefore(date string) error {
-	t, err := time.Parse("2006/01/02", date)
-
-	if err != nil {
-		return err
-	}
-
-	return a.backUpService.BackupDataToRemoteBefore(t)
 }
 
 type RegisterParms struct {
