@@ -2,117 +2,131 @@ package backup
 
 import (
 	"context"
+	"strings"
 	"time"
 )
 
-func (s BackupService) BackupData() error {
-	s.tradeRepo.Begin(context.Background())
+func (s *BackupService) getStoredProducts() ([]string, error) {
+	tx := s.txCreator.CreateTransaction(context.TODO())
 
-	_, err := s.tradeRepo.DumpTradeRepo()
-
-	if err == nil {
-		s.tradeRepo.Commit()
-		return nil
-	} else {
-		s.tradeRepo.Rollback()
-		return err
+	idList, err := s.metadataRepo.GetStoredProductList(tx.TransactionExtractor())
+	if err != nil {
+		return nil, err
 	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+	}
+
+	return idList, err
 }
 
-func (s BackupService) BackupDataBefore(time time.Time) error {
-	s.tradeRepo.Begin(context.Background())
+func (s *BackupService) BackupData() error {
 
-	_, err := s.tradeRepo.DumpTradeRepoBefore(time)
-
-	if err == nil {
-		s.tradeRepo.Commit()
-		return err
-	} else {
-		s.tradeRepo.Rollback()
-		return nil
-	}
-}
-
-func (s BackupService) BackupDataToRemote() error {
-	s.tradeRepo.Begin(context.Background())
-
-	f, err := s.tradeRepo.DumpTradeRepo()
-	defer s.fileRemover.RemoveFile(f)
-
+	productToBackup, err := s.getStoredProducts()
 	if err != nil {
-		s.tradeRepo.Rollback()
 		return err
 	}
 
-	err = s.transmit.TransmitDataToRemote(f)
+	now := time.Now()
+	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 
-	if err != nil {
-		s.tradeRepo.Rollback()
-		return err
+	for _, productId := range productToBackup {
+
+		_, err := s.tradeDumper.DumpProductBefore(productId, out, now)
+		if err != nil {
+			return err
+		}
+
 	}
 
-	s.tradeRepo.Commit()
-	return nil
+	// TODO: write metadata to file
+	// - Backup time in unix time stamp and human readable
+	// - Backup type
+	// - relational directory that actually contains dumped collection file from s.out/{datetime} directory
+	// - file list and its hash value
 
-}
-
-func (s BackupService) BackupDataToRemoteBefore(time time.Time) error {
-	s.tradeRepo.Begin(context.Background())
-
-	f, err := s.tradeRepo.DumpTradeRepoBefore(time)
-	defer s.fileRemover.RemoveFile(f)
-
-	if err != nil {
-		s.tradeRepo.Rollback()
-		return err
-	}
-
-	err = s.transmit.TransmitDataToRemote(f)
-
-	if err != nil {
-		s.tradeRepo.Rollback()
-		return err
-	}
-
-	s.tradeRepo.Commit()
 	return nil
 }
 
-func (s BackupService) BackupProduct(id string) error {
-	s.tradeRepo.Begin(context.Background())
+func (s *BackupService) BackupDataToRemote() error {
 
-	_, err := s.tradeRepo.DumpProduct(id)
-
+	productToBackup, err := s.getStoredProducts()
 	if err != nil {
-		s.tradeRepo.Rollback()
 		return err
-	} else {
-		s.tradeRepo.Commit()
-		return nil
 	}
 
+	now := time.Now()
+	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
+
+	for _, productId := range productToBackup {
+		f, err := s.tradeDumper.DumpProductBefore(productId, out, now)
+		if err != nil {
+			return err
+		}
+
+		err = s.transmitter.TransmitDataToRemote(f)
+		if err != nil {
+			return err
+		}
+
+	}
+
+	// TODO: write metadata to file
+	// - Backup time in unix time stamp and human readable
+	// - Backup type
+	// - relational directory that actually contains dumped collection file from s.out/{datetime} directory
+	// - file list and its hash value
+
+	// TODO: transmit metadata file to remote
+
+	return nil
 }
 
-func (s BackupService) BackupProductToRemote(id string) error {
+func (s *BackupService) BackupProduct(id string) error {
 
-	s.tradeRepo.Begin(context.Background())
+	now := time.Now()
+	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 
-	f, err := s.tradeRepo.DumpProduct(id)
-	defer s.fileRemover.RemoveFile(f)
-
+	_, err := s.tradeDumper.DumpProductBefore(id, out, now)
 	if err != nil {
-		s.tradeRepo.Rollback()
 		return err
 	}
 
-	err = s.transmit.TransmitDataToRemote(f)
+	// TODO: write metadata to file
+	// - Backup time in unix time stamp and human readable
+	// - Backup type
+	// - relational directory that actually contains dumped collection file from s.out/{datetime} directory
+	// - file list and its hash value
 
+	// TODO: transmit metadata file to remote
+
+	return nil
+}
+
+func (s *BackupService) BackupProductToRemote(id string) error {
+
+	now := time.Now()
+	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
+
+	f, err := s.tradeDumper.DumpProductBefore(id, out, now)
 	if err != nil {
-		s.tradeRepo.Rollback()
 		return err
-	} else {
-		s.tradeRepo.Commit()
-		return nil
 	}
 
+	err = s.transmitter.TransmitDataToRemote(f)
+	if err != nil {
+		return err
+	}
+
+	// TODO: write metadata to file
+	// - Backup time in unix time stamp and human readable
+	// - Backup type
+	// - relational directory that actually contains dumped collection file from s.out/{datetime} directory
+	// - file list and its hash value
+
+	// TODO: transmit metadata file to remote
+
+	return nil
 }
