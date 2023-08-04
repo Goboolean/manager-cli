@@ -9,52 +9,74 @@ import (
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
 )
 
-// This method dumps trade data of specific product
-func (a *TradeDumpAdaptor) DumpProduct(id string) (entity.File, error) {
-
-	targetDir := strings.Join([]string{a.baseOutDir, time.Now().Format("2006/01/02")}, "/")
-
-	err := mongoInf.ExecMongodump(
-		[]string{
-			strings.Join([]string{"--host", a.Host}, "="),
-			strings.Join([]string{"--port", a.Port}, "="),
-			strings.Join([]string{"--username", a.User}, "="),
-			strings.Join([]string{"--password", a.PassWord}, "="),
-			strings.Join([]string{"--authenticationDatabase", a.Database}, "="),
-			strings.Join([]string{"--db", a.Database}, "="),
-			strings.Join([]string{"--out", targetDir}, "="),
-			strings.Join([]string{"--collection", id}, "="),
-		})
-
-	if err != nil {
-		return entity.File{}, err
-	}
-
-	return entity.File{Name: "*", Path: strings.Join([]string{targetDir, a.Database}, "/")}, nil
-}
-
 // This method dumps trade data of specific product created before time
-func (a *TradeDumpAdaptor) DumpProductBefore(id string, date time.Time) (entity.File, error) {
-	q := fmt.Sprintf(`'{startTime:{"$lt":%d}}'`, date.Unix())
+func (a *TradeDumpAdaptor) DumpProductBefore(id string, outDir string, date time.Time) ([]entity.FileManager, error) {
 
-	targetDir := strings.Join([]string{a.baseOutDir, time.Now().Format("2006/01/02")}, "/")
+	q := fmt.Sprintf(`'{startTime:{"$lte":%d}}'`, date.Unix())
 
 	err := mongoInf.ExecMongodump(
 		[]string{
+			"--gzip",
 			strings.Join([]string{"--host", a.Host}, "="),
 			strings.Join([]string{"--port", a.Port}, "="),
 			strings.Join([]string{"--username", a.User}, "="),
 			strings.Join([]string{"--password", a.PassWord}, "="),
 			strings.Join([]string{"--authenticationDatabase", a.Database}, "="),
 			strings.Join([]string{"--db", a.Database}, "="),
-			strings.Join([]string{"--out", targetDir}, "="),
+			strings.Join([]string{"--out", outDir}, "="),
 			strings.Join([]string{"--collection", id}, "="),
 			strings.Join([]string{"--query=", q}, "="),
 		})
 
 	if err != nil {
-		return entity.File{}, err
+		return nil, err
 	}
 
-	return entity.File{Name: "*", Path: strings.Join([]string{targetDir, a.Database}, "/")}, nil
+	fmgr := make([]entity.FileManager, 2)
+	fmgr = append(fmgr, entity.FileManager{
+		Name: strings.Join([]string{id, ".bson.gz"}, ""),
+		Path: strings.Join([]string{outDir, a.Database}, "/"),
+	})
+	fmgr = append(fmgr, entity.FileManager{
+		Name: strings.Join([]string{id, ".metadata.json"}, ""),
+		Path: strings.Join([]string{outDir, a.Database}, "/"),
+	})
+
+	return fmgr, nil
+}
+
+// This method dumps trade data of specific product created between time\
+func (a *TradeDumpAdaptor) DumpProductBetween(id string, outDir string, from, to time.Time) ([]entity.FileManager, error) {
+
+	q := fmt.Sprintf(`'{"startTime":{"$gt":%d,"lte":%d}}'`, from.Unix(), to.Unix())
+
+	err := mongoInf.ExecMongodump(
+		[]string{
+			"--gzip",
+			strings.Join([]string{"--host", a.Host}, "="),
+			strings.Join([]string{"--port", a.Port}, "="),
+			strings.Join([]string{"--username", a.User}, "="),
+			strings.Join([]string{"--password", a.PassWord}, "="),
+			strings.Join([]string{"--authenticationDatabase", a.Database}, "="),
+			strings.Join([]string{"--db", a.Database}, "="),
+			strings.Join([]string{"--out", outDir}, "="),
+			strings.Join([]string{"--collection", id}, "="),
+			strings.Join([]string{"--query=", q}, "="),
+		})
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmgr := make([]entity.FileManager, 2)
+	fmgr = append(fmgr, entity.FileManager{
+		Name: strings.Join([]string{id, ".bson.gz"}, ""),
+		Path: strings.Join([]string{outDir, a.Database}, "/"),
+	})
+	fmgr = append(fmgr, entity.FileManager{
+		Name: strings.Join([]string{id, ".metadata.json"}, ""),
+		Path: strings.Join([]string{outDir, a.Database}, "/"),
+	})
+
+	return fmgr, nil
 }
