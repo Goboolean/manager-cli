@@ -10,9 +10,10 @@ import (
 func (s *RegistrationService) RegisterProduct(meta entity.ProductMeta) error {
 
 	var err error
-	transactor := s.txCreator.CreateTransaction(context.TODO())
+	ctx := context.TODO()
+	transactor := s.txCreator.CreateTransaction(ctx)
 
-	err = s.metaRepo.StoreProductMeta(transactor.TransactionExtractor(), meta)
+	err = s.metaRepo.StoreProductMeta(ctx, transactor.TransactionExtractor(), meta)
 
 	if err != nil {
 		err = transactor.Rollback()
