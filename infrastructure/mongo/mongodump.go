@@ -54,12 +54,12 @@ func ExecMongodump(options []string) error {
 	defer close(finishedChan)
 
 	if err = dump.Init(); err != nil {
-		//log.Logvf(log.Always, "Failed: %v", err)
+		log.Logvf(log.Always, "Failed: %v", err)
 		return err
 	}
 
 	if err = dump.Dump(); err != nil {
-		//log.Logvf(log.Always, "Failed: %v", err)
+		log.Logvf(log.Always, "Failed: %v", err)
 		return err
 	}
 
