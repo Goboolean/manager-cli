@@ -59,6 +59,9 @@ func (s *BackupService) BackupDataToRemote() error {
 
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
+	remoteDir := "/" + now.Format(toolTimeFormatString)
+
+	s.transmitter.CreateRemoteDir(remoteDir)
 
 	for _, productId := range productToBackup {
 		f, err := s.tradeDumper.DumpProductBefore(productId, out, now)
@@ -66,9 +69,11 @@ func (s *BackupService) BackupDataToRemote() error {
 			return err
 		}
 
-		err = s.transmitter.TransmitDataToRemote(f)
-		if err != nil {
-			return err
+		for i := range f {
+			err = s.transmitter.TransmitDataToRemote(f[i], remoteDir)
+			if err != nil {
+				return err
+			}
 		}
 
 	}
@@ -109,15 +114,20 @@ func (s *BackupService) BackupProductToRemote(id string) error {
 
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
+	remoteDir := "/" + now.Format(toolTimeFormatString)
+
+	s.transmitter.CreateRemoteDir(remoteDir)
 
 	f, err := s.tradeDumper.DumpProductBefore(id, out, now)
 	if err != nil {
 		return err
 	}
 
-	err = s.transmitter.TransmitDataToRemote(f)
-	if err != nil {
-		return err
+	for i := range f {
+		err = s.transmitter.TransmitDataToRemote(f[i], remoteDir)
+		if err != nil {
+			return err
+		}
 	}
 
 	// TODO: write metadata to file

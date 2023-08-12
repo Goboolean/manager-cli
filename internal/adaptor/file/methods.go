@@ -1,8 +1,6 @@
 package file
 
 import (
-	"errors"
-
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
 )
 
@@ -10,7 +8,7 @@ import (
 func (a *FileAdaptor) GetFileList(dir string) ([]entity.File, error) {
 	names, err := a.file.GetFileNameList(dir)
 	if err != nil {
-		return []entity.File{}, err
+		return []entity.File{}, nil
 	}
 
 	res := make([]entity.File, len(names))
@@ -37,10 +35,5 @@ func (a *FileAdaptor) RemoveFile(target entity.File) error {
 // This method calculate hash of file
 // YOU MUST USE THIS METHOD WHEN YOU WANT TO CALCULATE HASH OF A FILE
 func (a *FileAdaptor) CalculateFileHash(target entity.File) (string, error) {
-
-	if target.Name == "*" {
-		return "", errors.New("file: can't calculate hash for directory")
-	}
-
 	return a.file.CalculateXxhashChecksum(target.FullPath())
 }

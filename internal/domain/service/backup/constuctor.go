@@ -14,7 +14,7 @@ type BackupService struct {
 	tradeDumper  out.TradeDumperPort
 	metadataRepo out.MetadataRepositoryPort
 	transmitter  out.DataTransmitterPort
-	fileRemover  out.FilePort
+	fileRemover  out.FileOperatorPort
 	backUpDir    string
 }
 
@@ -24,7 +24,7 @@ func New(
 	tradeRepoPort out.TradeDumperPort,
 	metadataRepoPort out.MetadataRepositoryPort,
 	transmitter out.DataTransmitterPort,
-	fileRemover out.FilePort,
+	fileRemover out.FileOperatorPort,
 	outDir string) *BackupService {
 
 	return &BackupService{

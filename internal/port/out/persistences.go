@@ -26,9 +26,8 @@ type StatusPort interface {
 }
 
 type TradeDumperPort interface {
-
 	// This method dumps trade data of specific product created before time
-	DumpProductBefore(id string, outDir string, time time.Time) ([]entity.FileManager, error)
+	DumpProductBefore(id string, outDir string, time time.Time) ([]entity.File, error)
 	// This method dumps trade data of specific product created between time
-	DumpProductBetween(id string, outDir string, from, to time.Time) ([]entity.FileManager, error)
+	DumpProductBetween(id string, outDir string, from, to time.Time) ([]entity.File, error)
 }
