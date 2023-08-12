@@ -2,7 +2,11 @@ package out
 
 import "github.com/Goboolean/manager-cli/internal/domain/entity"
 
-// Defines Port for file operation ex: create, remove, copy, move
-type FilePort interface {
-	RemoveFile(target entity.FileManager) error
+type FileOperatorPort interface {
+	//This method get file list from a directory
+	GetFileList(dir string) ([]entity.File, error)
+	//This method remove file from local storage
+	RemoveFile(target entity.File) error
+	//This method calculate hash of file
+	CalculateFileHash(target entity.File) (string, error)
 }
