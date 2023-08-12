@@ -7,9 +7,10 @@ import (
 )
 
 func (s *BackupService) getStoredProducts() ([]string, error) {
-	tx := s.txCreator.CreateTransaction(context.TODO())
+	ctx := context.TODO()
+	tx := s.txCreator.CreateTransaction(ctx)
 
-	idList, err := s.metadataRepo.GetStoredProductList(tx.TransactionExtractor())
+	idList, err := s.metadataRepo.GetStoredProductList(ctx, tx.TransactionExtractor())
 	if err != nil {
 		return nil, err
 	}
