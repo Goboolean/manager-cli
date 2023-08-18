@@ -9,6 +9,7 @@ const backupTypeFull = "f"
 const backupTypeDifferential = "d"
 const backupTypeSpecific = "s"
 
+const hashVer = "v1"
 type BackupService struct {
 	txCreator    out.TransactionCreator
 	tradeDumper  out.TradeDumperPort
