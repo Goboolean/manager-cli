@@ -9,13 +9,16 @@ const backupTypeFull = "f"
 const backupTypeDifferential = "d"
 const backupTypeSpecific = "s"
 
+const hashVer = "v1"
+
 type BackupService struct {
-	txCreator    out.TransactionCreator
-	tradeDumper  out.TradeDumperPort
-	metadataRepo out.MetadataRepositoryPort
-	transmitter  out.DataTransmitterPort
-	fileRemover  out.FileOperatorPort
-	backUpDir    string
+	txCreator      out.TransactionCreator
+	tradeDumper    out.TradeDumperPort
+	metadataRepo   out.MetadataRepositoryPort
+	transmitter    out.DataTransmitterPort
+	fileOperator   out.FileOperatorPort
+	backupMetaPort out.BackupMetaPort
+	backUpDir      string
 }
 
 // TODO: Find good name for field and parm
@@ -25,6 +28,7 @@ func New(
 	metadataRepoPort out.MetadataRepositoryPort,
 	transmitter out.DataTransmitterPort,
 	fileRemover out.FileOperatorPort,
+	backupMeta out.BackupMetaPort,
 	outDir string) *BackupService {
 
 	return &BackupService{
@@ -32,7 +36,7 @@ func New(
 		tradeDumper:  tradeRepoPort,
 		metadataRepo: metadataRepoPort,
 		transmitter:  transmitter,
-		fileRemover:  fileRemover,
+		fileOperator: fileRemover,
 		backUpDir:    outDir,
 	}
 }

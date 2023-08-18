@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 	"time"
+
+	"github.com/Goboolean/manager-cli/internal/domain/entity"
 )
 
 func (s *BackupService) getStoredProducts() ([]string, error) {
@@ -32,23 +34,41 @@ func (s *BackupService) BackupData() error {
 
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
+	meta := entity.BackupMeta{
+		BackupType:   entity.DiffBackup,
+		BackupDbList: productToBackup,
+		Timestamp:    now.Unix(),
+		Date:         now.Format(toolTimeFormatString),
+		HashVer:      hashVer,
+		FileInfoList: []entity.BackupFileInfo{},
+	}
 
 	for _, productId := range productToBackup {
-
-		_, err := s.tradeDumper.DumpProductBefore(productId, out, now)
+		f, err := s.tradeDumper.DumpProductBefore(productId, out, now)
 		if err != nil {
 			return err
 		}
 
+		for i := range f {
+			h, err := s.fileOperator.CalculateFileHash(f[i])
+			if err != nil {
+				return err
+			}
+
+			meta.FileInfoList = append(meta.FileInfoList, entity.BackupFileInfo{
+				Name: f[i].Name,
+				Hash: h,
+			})
+		}
+
 	}
 
-	// TODO: write metadata to file
-	// - Backup time in unix time stamp and human readable
-	// - Backup type
-	// - relational directory that actually contains dumped collection file from s.out/{datetime} directory
-	// - file list and its hash value
+	metaFile := entity.File{
+		Name:    "metadata.json",
+		DirPath: out,
+	}
 
-	return nil
+	return s.backupMetaPort.StoreBackupMeta(meta, metaFile)
 }
 
 func (s *BackupService) BackupDataToRemote() error {
@@ -61,6 +81,14 @@ func (s *BackupService) BackupDataToRemote() error {
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 	remoteDir := "/" + now.Format(toolTimeFormatString)
+	meta := entity.BackupMeta{
+		BackupType:   entity.DiffBackup,
+		BackupDbList: productToBackup,
+		Timestamp:    now.Unix(),
+		Date:         now.Format(toolTimeFormatString),
+		HashVer:      hashVer,
+		FileInfoList: []entity.BackupFileInfo{},
+	}
 
 	s.transmitter.CreateRemoteDir(remoteDir)
 
@@ -71,21 +99,30 @@ func (s *BackupService) BackupDataToRemote() error {
 		}
 
 		for i := range f {
+
+			h, err := s.fileOperator.CalculateFileHash(f[i])
+			if err != nil {
+				return err
+			}
+
 			err = s.transmitter.TransmitDataToRemote(f[i], remoteDir)
 			if err != nil {
 				return err
 			}
-		}
 
+			meta.FileInfoList = append(meta.FileInfoList, entity.BackupFileInfo{
+				Name: f[i].Name,
+				Hash: h,
+			})
+		}
 	}
 
-	// TODO: write metadata to file
-	// - Backup time in unix time stamp and human readable
-	// - Backup type
-	// - relational directory that actually contains dumped collection file from s.out/{datetime} directory
-	// - file list and its hash value
+	metaFile := entity.File{
+		Name:    "metadata.json",
+		DirPath: out,
+	}
 
-	// TODO: transmit metadata file to remote
+	s.backupMetaPort.StoreBackupMeta(meta, metaFile)
 
 	return nil
 }
@@ -94,19 +131,30 @@ func (s *BackupService) BackupProduct(id string) error {
 
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
+	meta := entity.BackupMeta{
+		BackupType:   entity.FullBackup,
+		Timestamp:    now.Unix(),
+		Date:         now.Format(toolTimeFormatString),
+		HashVer:      hashVer,
+		BackupDbList: []string{id},
+	}
 
-	_, err := s.tradeDumper.DumpProductBefore(id, out, now)
+	f, err := s.tradeDumper.DumpProductBefore(id, out, now)
 	if err != nil {
 		return err
 	}
 
-	// TODO: write metadata to file
-	// - Backup time in unix time stamp and human readable
-	// - Backup type
-	// - relational directory that actually contains dumped collection file from s.out/{datetime} directory
-	// - file list and its hash value
+	for i := range f {
+		h, err := s.fileOperator.CalculateFileHash(f[i])
+		if err != nil {
+			return err
+		}
 
-	// TODO: transmit metadata file to remote
+		meta.FileInfoList = append(meta.FileInfoList, entity.BackupFileInfo{
+			Name: f[i].Name,
+			Hash: h,
+		})
+	}
 
 	return nil
 }
@@ -116,6 +164,13 @@ func (s *BackupService) BackupProductToRemote(id string) error {
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 	remoteDir := "/" + now.Format(toolTimeFormatString)
+	meta := entity.BackupMeta{
+		BackupType:   entity.FullBackup,
+		Timestamp:    now.Unix(),
+		Date:         now.Format(toolTimeFormatString),
+		HashVer:      hashVer,
+		BackupDbList: []string{id},
+	}
 
 	s.transmitter.CreateRemoteDir(remoteDir)
 
@@ -131,11 +186,17 @@ func (s *BackupService) BackupProductToRemote(id string) error {
 		}
 	}
 
-	// TODO: write metadata to file
-	// - Backup time in unix time stamp and human readable
-	// - Backup type
-	// - relational directory that actually contains dumped collection file from s.out/{datetime} directory
-	// - file list and its hash value
+	for i := range f {
+		h, err := s.fileOperator.CalculateFileHash(f[i])
+		if err != nil {
+			return err
+		}
+
+		meta.FileInfoList = append(meta.FileInfoList, entity.BackupFileInfo{
+			Name: f[i].Name,
+			Hash: h,
+		})
+	}
 
 	// TODO: transmit metadata file to remote
 
