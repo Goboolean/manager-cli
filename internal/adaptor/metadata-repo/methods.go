@@ -4,18 +4,19 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/Goboolean/manager-cli/infrastructure/rdbms"
 	transactionManager "github.com/Goboolean/manager-cli/internal/adaptor/transaction-manager"
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
-	"github.com/Goboolean/shared/pkg/rdbms"
 )
 
 // This method gets unique id of a product which can be hash, UUID and so on...
-func (m *MetadataRepositoryAdaptor) GetProductId(ctx context.Context,
+func (a *MetadataRepositoryAdaptor) GetProductId(
+	ctx context.Context,
 	tx transactionManager.TransactionExtractor,
 	code string) (string, error) {
 
-	q := m.db.NewQueries().WithTx(tx.TransactionPsql())
-	result, err := q.GetStockIdBySymbol(ctx, code)
+	q := rdbms.NewQueries(a.db).WithTx(tx.TransactionPsql())
+	result, err := q.GetProductIdBySymbol(ctx, code)
 
 	if err != nil {
 		return "", err
@@ -26,12 +27,13 @@ func (m *MetadataRepositoryAdaptor) GetProductId(ctx context.Context,
 }
 
 // This method gets full metadata of a product
-func (m *MetadataRepositoryAdaptor) GetProductMeta(ctx context.Context,
+func (a *MetadataRepositoryAdaptor) GetProductMeta(
+	ctx context.Context,
 	tx transactionManager.TransactionExtractor,
 	id string) (entity.ProductMeta, error) {
 
-	q := m.db.NewQueries().WithTx(tx.TransactionPsql())
-	result, err := q.GetStockMeta(ctx, id)
+	q := rdbms.NewQueries(a.db).WithTx(tx.TransactionPsql())
+	result, err := q.GetProductMeta(ctx, id)
 
 	if err != nil {
 		return entity.ProductMeta{}, err
@@ -48,14 +50,16 @@ func (m *MetadataRepositoryAdaptor) GetProductMeta(ctx context.Context,
 }
 
 // This method stores metadata to metadata repository which can be mysql, radius so on...
-func (m *MetadataRepositoryAdaptor) StoreProductMeta(ctx context.Context,
+func (a *MetadataRepositoryAdaptor) StoreProductMeta(
+	ctx context.Context,
 	tx transactionManager.TransactionExtractor,
 	meta entity.ProductMeta) error {
 
-	q := m.db.NewQueries().WithTx(tx.TransactionPsql())
-	return q.InsertNewStockMeta(
+	q := rdbms.NewQueries(a.db).WithTx(tx.TransactionPsql())
+
+	return q.InsertNewProductMeta(
 		ctx,
-		rdbms.InsertNewStockMetaParams{
+		rdbms.InsertNewProductMetaParams{
 			ID:          meta.Id,
 			Name:        meta.Name,
 			Symbol:      meta.Code,
@@ -66,10 +70,16 @@ func (m *MetadataRepositoryAdaptor) StoreProductMeta(ctx context.Context,
 		})
 }
 
-func (m *MetadataRepositoryAdaptor) Close() error {
-	return m.db.Close()
+func (a *MetadataRepositoryAdaptor) Close() error {
+	return a.db.Close()
 }
 
-func (m *MetadataRepositoryAdaptor) Ping() error {
-	return m.db.Ping()
+func (a *MetadataRepositoryAdaptor) Ping() error {
+	return a.db.Ping()
+}
+
+// This method get list of stored product
+func (a *MetadataRepositoryAdaptor) GetStoredProductList(ctx context.Context, tx transactionManager.TransactionExtractor) ([]string, error) {
+	q := rdbms.NewQueries(a.db).WithTx(tx.TransactionPsql())
+	return q.GetStoredProductList(ctx)
 }

@@ -84,6 +84,7 @@ func (a *CommandAdaptor) UpdateStatus(id string, desired string) error {
 
 		TargetStatusMask, _ := strconv.ParseInt(desired, 10, 0)
 
+		//FIXME:
 		return a.statusService.SetStatus(id, entity.ProductStatus{
 			Relayable:   TargetStatusMask&1<<2 == 1,
 			Stored:      TargetStatusMask&1<<1 == 1,
