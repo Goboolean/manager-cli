@@ -84,11 +84,10 @@ func (a *CommandAdaptor) UpdateStatus(id string, desired string) error {
 
 		TargetStatusMask, _ := strconv.ParseInt(desired, 10, 0)
 
-		//FIXME:
 		return a.statusService.SetStatus(id, entity.ProductStatus{
-			Relayable:   TargetStatusMask&1<<2 == 1,
-			Stored:      TargetStatusMask&1<<1 == 1,
-			Transmitted: TargetStatusMask&1<<0 == 1,
+			Relayable:   TargetStatusMask&1<<2 >= 1,
+			Stored:      TargetStatusMask&1<<1 >= 1,
+			Transmitted: TargetStatusMask&1<<0 >= 1,
 		})
 
 	} else if matched, _ := regexp.MatchString("^(\\+|-|=)(r|s|t){1,3}$", id); matched {
