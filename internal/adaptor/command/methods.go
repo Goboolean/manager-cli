@@ -9,21 +9,38 @@ import (
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
 )
 
-// TODO: 함수가 너무 많아지면 옵션 구조체를 넘기는 방안도 생각해보기
-func (a *CommandAdaptor) BackupAll() error {
-	return a.backUpService.BackupData()
+type BackupType int
+
+const (
+	FullBak BackupType = iota + 1
+	DiffBak
+)
+
+// TODO: 함수가 너무 많아지면 옵션 구조체를 넘기는 방안도 생각해보기 클라이언트의 요구사항에 맟춰 변경 가능한 인터페이스
+func (a *CommandAdaptor) BackupTrade(backupType BackupType, isTransmitted bool) error {
+	if backupType == FullBak && isTransmitted {
+		return a.backUpService.BackupTradeFullToRemote()
+	} else if backupType == DiffBak && isTransmitted {
+		return a.backUpService.BackupTradeDiffToRemote()
+	} else if backupType == FullBak && !isTransmitted {
+		return a.backUpService.BackupTradeFull()
+	} else if backupType == DiffBak && !isTransmitted {
+		return a.backUpService.BackupTradeDiff()
+	}
+	return nil
 }
 
-func (a *CommandAdaptor) BackupAllToRemote() error {
-	return a.backUpService.BackupDataToRemote()
-}
-
-func (a *CommandAdaptor) BackupProduct(id string) error {
-	return a.backUpService.BackupProduct(id)
-}
-
-func (a *CommandAdaptor) BackupProductToRemote(id string) error {
-	return a.backUpService.BackupProductToRemote(id)
+func (a *CommandAdaptor) BackupProduct(id string, backupType BackupType, isTransmitted bool) error {
+	if backupType == FullBak && isTransmitted {
+		return a.backUpService.BackupProductFullToRemote(id)
+	} else if backupType == DiffBak && isTransmitted {
+		return a.backUpService.BackupProductDiffToRemote(id)
+	} else if backupType == FullBak && !isTransmitted {
+		return a.backUpService.BackupProductFull(id)
+	} else if backupType == DiffBak && !isTransmitted {
+		return a.backUpService.BackupProductDiff(id)
+	}
+	return nil
 }
 
 type RegisterParms struct {
