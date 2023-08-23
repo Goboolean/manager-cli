@@ -30,3 +30,6 @@ SELECT id FROM product_meta WHERE symbol = ($1);
 
 -- name: GetStoredProductList :many
 SELECT id FROM product_meta,store_log WHERE product_meta.id = store_log.product_id;
+
+-- name: CheckProductIsStored :one
+SELECT EXISTS(SELECT 1 FROM store_log WHERE product_id  = ($1));

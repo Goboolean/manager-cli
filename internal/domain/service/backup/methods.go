@@ -2,11 +2,17 @@ package backup
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
 )
+
+//HACK:
+// There are many duplications. braking function for each use case may cause these redundancy
+// Consider adapting abstractions based on the evolving progress of this project.
+// However, avoid abstracting too hastily, as incorrect abstractions can make code maintenance more challenging.
 
 func (s *BackupService) getStoredProducts() ([]string, error) {
 	ctx := context.TODO()
@@ -39,7 +45,7 @@ func (s *BackupService) BackupTradeFull() error {
 		Timestamp:    now.Unix(),
 		Date:         now.Format(toolTimeFormatString),
 		HashVer:      hashVer,
-		FileInfoList: []entity.BackupFileInfo{},
+		FileList:     []entity.FileNameWithHash{},
 	}
 
 	for _, productId := range productToBackup {
@@ -54,12 +60,11 @@ func (s *BackupService) BackupTradeFull() error {
 				return err
 			}
 
-			meta.FileInfoList = append(meta.FileInfoList, entity.BackupFileInfo{
+			meta.FileList = append(meta.FileList, entity.FileNameWithHash{
 				Name: f[i].Name,
 				Hash: h,
 			})
 		}
-
 	}
 
 	metaFile := entity.File{
@@ -67,7 +72,12 @@ func (s *BackupService) BackupTradeFull() error {
 		DirPath: out,
 	}
 
-	return s.backupMetaPort.StoreBackupMeta(meta, metaFile)
+	err = s.backupMetaPort.StoreBackupMeta(meta, metaFile)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // BackupTradeDiff backs up the differential trade data of last full backup to the local storage.
@@ -91,7 +101,7 @@ func (s *BackupService) BackupTradeFullToRemote() error {
 		Timestamp:    now.Unix(),
 		Date:         now.Format(toolTimeFormatString),
 		HashVer:      hashVer,
-		FileInfoList: []entity.BackupFileInfo{},
+		FileList:     []entity.FileNameWithHash{},
 	}
 
 	s.transmitter.CreateRemoteDir(remoteDir)
@@ -114,7 +124,7 @@ func (s *BackupService) BackupTradeFullToRemote() error {
 				return err
 			}
 
-			meta.FileInfoList = append(meta.FileInfoList, entity.BackupFileInfo{
+			meta.FileList = append(meta.FileList, entity.FileNameWithHash{
 				Name: f[i].Name,
 				Hash: h,
 			})
@@ -127,6 +137,14 @@ func (s *BackupService) BackupTradeFullToRemote() error {
 	}
 
 	s.backupMetaPort.StoreBackupMeta(meta, metaFile)
+	if err != nil {
+		return err
+	}
+
+	s.transmitter.TransmitDataToRemote(metaFile, remoteDir)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -139,6 +157,18 @@ func (s *BackupService) BackupTradeDiffToRemote() error {
 // BackupProductFull backs up all trade data
 // related to a specific product (identified by 'id') to the local storage.
 func (s *BackupService) BackupProductFull(id string) error {
+	ctx := context.TODO()
+	tx := s.txCreator.CreateTransaction(ctx)
+
+	isStored, err := s.metadataRepo.IsProductStored(ctx, tx.TransactionExtractor(), id)
+
+	if err != nil {
+		return err
+	}
+	if !isStored {
+		return fmt.Errorf("find product: %s is not stored", id)
+	}
+
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 	meta := entity.BackupMeta{
@@ -160,10 +190,20 @@ func (s *BackupService) BackupProductFull(id string) error {
 			return err
 		} // BackupTradeFull backs up all trade data to the local storage.
 
-		meta.FileInfoList = append(meta.FileInfoList, entity.BackupFileInfo{
+		meta.FileList = append(meta.FileList, entity.FileNameWithHash{
 			Name: f[i].Name,
 			Hash: h,
 		})
+	}
+
+	MetadataFile := entity.File{
+		Name:    "metadata.json",
+		DirPath: out,
+	}
+
+	s.backupMetaPort.StoreBackupMeta(meta, MetadataFile)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -178,6 +218,18 @@ func (s *BackupService) BackupProductDiff(id string) error {
 // BackupProductFullToRemote backs up all trade data
 // related to a specific product (identified by 'id') to a remote storage.
 func (s *BackupService) BackupProductFullToRemote(id string) error {
+	ctx := context.TODO()
+	tx := s.txCreator.CreateTransaction(ctx)
+
+	isStored, err := s.metadataRepo.IsProductStored(ctx, tx.TransactionExtractor(), id)
+
+	if err != nil {
+		return err
+	}
+	if !isStored {
+		return fmt.Errorf("find product: %s is not stored", id)
+	}
+
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 	remoteDir := "/" + now.Format(toolTimeFormatString)
@@ -201,21 +253,33 @@ func (s *BackupService) BackupProductFullToRemote(id string) error {
 		if err != nil {
 			return err
 		}
-	}
 
-	for i := range f {
 		h, err := s.fileOperator.CalculateFileHash(f[i])
+
 		if err != nil {
 			return err
 		}
 
-		meta.FileInfoList = append(meta.FileInfoList, entity.BackupFileInfo{
+		meta.FileList = append(meta.FileList, entity.FileNameWithHash{
 			Name: f[i].Name,
 			Hash: h,
 		})
 	}
 
-	// TODO: transmit metadata file to remote
+	MetadataFile := entity.File{
+		Name:    "metadata.json",
+		DirPath: out,
+	}
+
+	s.backupMetaPort.StoreBackupMeta(meta, MetadataFile)
+	if err != nil {
+		return err
+	}
+
+	s.transmitter.TransmitDataToRemote(MetadataFile, remoteDir)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

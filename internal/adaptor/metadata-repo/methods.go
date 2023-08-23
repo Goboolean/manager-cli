@@ -70,6 +70,11 @@ func (a *MetadataRepositoryAdaptor) StoreProductMeta(
 		})
 }
 
+func (a *MetadataRepositoryAdaptor) IsProductStored(ctx context.Context, tx transactionManager.TransactionExtractor, id string) (bool, error) {
+	q := rdbms.NewQueries(a.db).WithTx(tx.TransactionPsql())
+	return q.CheckProductIsStored(ctx, id)
+}
+
 func (a *MetadataRepositoryAdaptor) Close() error {
 	return a.db.Close()
 }

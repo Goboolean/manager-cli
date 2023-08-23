@@ -10,6 +10,17 @@ import (
 	"database/sql"
 )
 
+const checkProductIsStored = `-- name: CheckProductIsStored :one
+SELECT EXISTS(SELECT 1 FROM store_log WHERE product_id  = ($1))
+`
+
+func (q *Queries) CheckProductIsStored(ctx context.Context, productID string) (bool, error) {
+	row := q.db.QueryRowContext(ctx, checkProductIsStored, productID)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 const deletePlatformInfo = `-- name: DeletePlatformInfo :exec
 DELETE FROM product_platform WHERE product_id = ($1) AND platform_name = ($2)
 `
