@@ -40,7 +40,7 @@ func (s *BackupService) BackupData() error {
 		Timestamp:    now.Unix(),
 		Date:         now.Format(toolTimeFormatString),
 		HashVer:      hashVer,
-		FileInfoList: []entity.BackupFileInfo{},
+		FileList:     []entity.FileNameWithHash{},
 	}
 
 	for _, productId := range productToBackup {
@@ -55,12 +55,11 @@ func (s *BackupService) BackupData() error {
 				return err
 			}
 
-			meta.FileInfoList = append(meta.FileInfoList, entity.BackupFileInfo{
+			meta.FileList = append(meta.FileList, entity.FileNameWithHash{
 				Name: f[i].Name,
 				Hash: h,
 			})
 		}
-
 	}
 
 	metaFile := entity.File{
@@ -68,7 +67,12 @@ func (s *BackupService) BackupData() error {
 		DirPath: out,
 	}
 
-	return s.backupMetaPort.StoreBackupMeta(meta, metaFile)
+	err = s.backupMetaPort.StoreBackupMeta(meta, metaFile)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *BackupService) BackupDataToRemote() error {
@@ -87,7 +91,7 @@ func (s *BackupService) BackupDataToRemote() error {
 		Timestamp:    now.Unix(),
 		Date:         now.Format(toolTimeFormatString),
 		HashVer:      hashVer,
-		FileInfoList: []entity.BackupFileInfo{},
+		FileList:     []entity.FileNameWithHash{},
 	}
 
 	s.transmitter.CreateRemoteDir(remoteDir)
@@ -110,7 +114,7 @@ func (s *BackupService) BackupDataToRemote() error {
 				return err
 			}
 
-			meta.FileInfoList = append(meta.FileInfoList, entity.BackupFileInfo{
+			meta.FileList = append(meta.FileList, entity.FileNameWithHash{
 				Name: f[i].Name,
 				Hash: h,
 			})
@@ -123,6 +127,14 @@ func (s *BackupService) BackupDataToRemote() error {
 	}
 
 	s.backupMetaPort.StoreBackupMeta(meta, metaFile)
+	if err != nil {
+		return err
+	}
+
+	s.transmitter.TransmitDataToRemote(metaFile, remoteDir)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -150,10 +162,20 @@ func (s *BackupService) BackupProduct(id string) error {
 			return err
 		}
 
-		meta.FileInfoList = append(meta.FileInfoList, entity.BackupFileInfo{
+		meta.FileList = append(meta.FileList, entity.FileNameWithHash{
 			Name: f[i].Name,
 			Hash: h,
 		})
+	}
+
+	MetadataFile := entity.File{
+		Name:    "metadata.json",
+		DirPath: out,
+	}
+
+	s.backupMetaPort.StoreBackupMeta(meta, MetadataFile)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -184,21 +206,33 @@ func (s *BackupService) BackupProductToRemote(id string) error {
 		if err != nil {
 			return err
 		}
-	}
 
-	for i := range f {
 		h, err := s.fileOperator.CalculateFileHash(f[i])
+
 		if err != nil {
 			return err
 		}
 
-		meta.FileInfoList = append(meta.FileInfoList, entity.BackupFileInfo{
+		meta.FileList = append(meta.FileList, entity.FileNameWithHash{
 			Name: f[i].Name,
 			Hash: h,
 		})
 	}
 
-	// TODO: transmit metadata file to remote
+	MetadataFile := entity.File{
+		Name:    "metadata.json",
+		DirPath: out,
+	}
+
+	s.backupMetaPort.StoreBackupMeta(meta, MetadataFile)
+	if err != nil {
+		return err
+	}
+
+	s.transmitter.TransmitDataToRemote(MetadataFile, remoteDir)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
