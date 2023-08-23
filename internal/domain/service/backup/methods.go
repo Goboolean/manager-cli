@@ -31,8 +31,7 @@ func (s *BackupService) getStoredProducts() ([]string, error) {
 	return idList, err
 }
 
-func (s *BackupService) BackupData() error {
-
+func (s *BackupService) BackupTradeFull() error {
 	productToBackup, err := s.getStoredProducts()
 	if err != nil {
 		return err
@@ -81,8 +80,13 @@ func (s *BackupService) BackupData() error {
 	return nil
 }
 
-func (s *BackupService) BackupDataToRemote() error {
+// BackupTradeDiff backs up the differential trade data of last full backup to the local storage.
+func (s *BackupService) BackupTradeDiff() error {
+	panic("not implemented") // TODO: Implement
+}
 
+// BackupTradeFullToRemote backs up all trade data to a remote storage.
+func (s *BackupService) BackupTradeFullToRemote() error {
 	productToBackup, err := s.getStoredProducts()
 	if err != nil {
 		return err
@@ -145,7 +149,14 @@ func (s *BackupService) BackupDataToRemote() error {
 	return nil
 }
 
-func (s *BackupService) BackupProduct(id string) error {
+// BackupTradeDiffToRemote backs up the differential trade data to a remote storage.
+func (s *BackupService) BackupTradeDiffToRemote() error {
+	panic("not implemented") // TODO: Implement
+}
+
+// BackupProductFull backs up all trade data
+// related to a specific product (identified by 'id') to the local storage.
+func (s *BackupService) BackupProductFull(id string) error {
 	ctx := context.TODO()
 	tx := s.txCreator.CreateTransaction(ctx)
 
@@ -177,7 +188,7 @@ func (s *BackupService) BackupProduct(id string) error {
 		h, err := s.fileOperator.CalculateFileHash(f[i])
 		if err != nil {
 			return err
-		}
+		} // BackupTradeFull backs up all trade data to the local storage.
 
 		meta.FileList = append(meta.FileList, entity.FileNameWithHash{
 			Name: f[i].Name,
@@ -198,7 +209,15 @@ func (s *BackupService) BackupProduct(id string) error {
 	return nil
 }
 
-func (s *BackupService) BackupProductToRemote(id string) error {
+// BackupProductDiff backs up the differential trade data of last full backup
+// related to a specific product (identified by 'id') to the local storage.
+func (s *BackupService) BackupProductDiff(id string) error {
+	panic("not implemented") // TODO: Implement
+}
+
+// BackupProductFullToRemote backs up all trade data
+// related to a specific product (identified by 'id') to a remote storage.
+func (s *BackupService) BackupProductFullToRemote(id string) error {
 	ctx := context.TODO()
 	tx := s.txCreator.CreateTransaction(ctx)
 
@@ -263,4 +282,10 @@ func (s *BackupService) BackupProductToRemote(id string) error {
 	}
 
 	return nil
+}
+
+// BackupProductDiffToRemote backs up the differential trade data
+// related to a specific product (identified by 'id') to a remote storage.
+func (s *BackupService) BackupProductDiffToRemote(id string) error {
+	panic("not implemented") // TODO: Implement
 }
