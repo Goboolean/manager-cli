@@ -10,31 +10,31 @@ type TradeDumpAdaptor struct {
 	Database string
 }
 
-func New(c *resolver.ConfigMap, outDir string) *TradeDumpAdaptor {
+func New(c *resolver.ConfigMap, outDir string) (*TradeDumpAdaptor, error) {
 
 	user, err := c.GetStringKey("USER")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	password, err := c.GetStringKey("PASSWORD")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	host, err := c.GetStringKey("HOST")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	port, err := c.GetStringKey("PORT")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	database, err := c.GetStringKey("DATABASE")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return &TradeDumpAdaptor{
@@ -43,5 +43,5 @@ func New(c *resolver.ConfigMap, outDir string) *TradeDumpAdaptor {
 		Host:     host,
 		Port:     port,
 		Database: database,
-	}
+	}, nil
 }
