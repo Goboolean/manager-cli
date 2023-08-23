@@ -2,11 +2,17 @@ package backup
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
 )
+
+//HACK:
+// There are many duplications. braking function for each use case may cause these redundancy
+// Consider adapting abstractions based on the evolving progress of this project.
+// However, avoid abstracting too hastily, as incorrect abstractions can make code maintenance more challenging.
 
 func (s *BackupService) getStoredProducts() ([]string, error) {
 	ctx := context.TODO()
@@ -140,6 +146,17 @@ func (s *BackupService) BackupDataToRemote() error {
 }
 
 func (s *BackupService) BackupProduct(id string) error {
+	ctx := context.TODO()
+	tx := s.txCreator.CreateTransaction(ctx)
+
+	isStored, err := s.metadataRepo.IsProductStored(ctx, tx.TransactionExtractor(), id)
+
+	if err != nil {
+		return err
+	}
+	if !isStored {
+		return fmt.Errorf("find product: %s is not stored", id)
+	}
 
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
@@ -182,6 +199,17 @@ func (s *BackupService) BackupProduct(id string) error {
 }
 
 func (s *BackupService) BackupProductToRemote(id string) error {
+	ctx := context.TODO()
+	tx := s.txCreator.CreateTransaction(ctx)
+
+	isStored, err := s.metadataRepo.IsProductStored(ctx, tx.TransactionExtractor(), id)
+
+	if err != nil {
+		return err
+	}
+	if !isStored {
+		return fmt.Errorf("find product: %s is not stored", id)
+	}
 
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
