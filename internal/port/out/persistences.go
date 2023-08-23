@@ -11,6 +11,9 @@ import (
 type MetadataRepositoryPort interface {
 	// This method get list of stored product
 	GetStoredProductList(ctx context.Context, tx transactionManager.TransactionExtractor) ([]string, error)
+	// This method returns boolean type that indicates if the trade data of a product is stored
+	// true: stored, false: not stored
+	IsProductStored(ctx context.Context, tx transactionManager.TransactionExtractor, id string) (bool, error)
 	// This method gets unique id of a product which can be hash, UUID and so on...
 	GetProductId(ctx context.Context, tx transactionManager.TransactionExtractor, code string) (string, error)
 	// This method gets full metadata of a product
