@@ -2,6 +2,9 @@ package entity
 
 // All metadata that this domain needs
 
+// If a string field is equal to NullString, it is considered as null
+const NullString = "NULL_STRING"
+
 type ProductMeta struct {
 	Id          string // {type}.{name}.{location}
 	Name        string // Human readable product name

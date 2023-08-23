@@ -35,6 +35,10 @@ func (a *MetadataRepositoryAdaptor) GetProductMeta(
 	q := rdbms.NewQueries(a.db).WithTx(tx.TransactionPsql())
 	result, err := q.GetProductMeta(ctx, id)
 
+	if !result.Location.Valid {
+		result.Location.String = entity.NullString
+	}
+
 	if err != nil {
 		return entity.ProductMeta{}, err
 	}
@@ -66,7 +70,7 @@ func (a *MetadataRepositoryAdaptor) StoreProductMeta(
 			Description: sql.NullString{String: meta.Description, Valid: meta.Description != ""},
 			Type:        meta.Type,
 			Exchange:    meta.Exchange,
-			Location:    sql.NullString{String: meta.Location, Valid: meta.Type == "stock"},
+			Location:    sql.NullString{String: meta.Location, Valid: meta.Location == entity.NullString},
 		})
 }
 

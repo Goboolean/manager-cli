@@ -56,7 +56,7 @@ func (a *CommandAdaptor) Register(in RegisterParms) error {
 	if in.Location == "null" {
 		// Blank String indicates null
 		// TODO: define blank string as constant
-		in.Location = ""
+		in.Location = entity.NullString
 	}
 
 	id := strings.Join([]string{in.Type, in.Code, in.Location}, ".")
