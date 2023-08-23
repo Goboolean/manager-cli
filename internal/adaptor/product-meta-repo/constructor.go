@@ -1,4 +1,4 @@
-package metadataRepo
+package productMetaRepo
 
 import (
 	"github.com/Goboolean/manager-cli/infrastructure/rdbms"

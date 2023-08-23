@@ -1,4 +1,4 @@
-package metadataRepo
+package productMetaRepo
 
 import (
 	"context"
