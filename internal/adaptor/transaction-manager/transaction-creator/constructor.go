@@ -1,4 +1,4 @@
-package transactionFactory
+package transactionCreator
 
 type TransactionBuilder struct {
 }
