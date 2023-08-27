@@ -16,7 +16,10 @@ import (
 
 func (s *BackupService) getStoredProducts() ([]string, error) {
 	ctx := context.TODO()
-	tx := s.txCreator.CreateTransaction(ctx)
+	tx, err := s.txCreator.CreateTransaction(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	idList, err := s.metadataRepo.GetStoredProductList(ctx, tx.TransactionExtractor())
 	if err != nil {
@@ -158,7 +161,10 @@ func (s *BackupService) BackupTradeDiffToRemote() error {
 // related to a specific product (identified by 'id') to the local storage.
 func (s *BackupService) BackupProductFull(id string) error {
 	ctx := context.TODO()
-	tx := s.txCreator.CreateTransaction(ctx)
+	tx, err := s.txCreator.CreateTransaction(ctx)
+	if err != nil {
+		return err
+	}
 
 	isStored, err := s.metadataRepo.IsProductStored(ctx, tx.TransactionExtractor(), id)
 
@@ -219,7 +225,10 @@ func (s *BackupService) BackupProductDiff(id string) error {
 // related to a specific product (identified by 'id') to a remote storage.
 func (s *BackupService) BackupProductFullToRemote(id string) error {
 	ctx := context.TODO()
-	tx := s.txCreator.CreateTransaction(ctx)
+	tx, err := s.txCreator.CreateTransaction(ctx)
+	if err != nil {
+		return err
+	}
 
 	isStored, err := s.metadataRepo.IsProductStored(ctx, tx.TransactionExtractor(), id)
 
