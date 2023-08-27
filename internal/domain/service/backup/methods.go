@@ -106,7 +106,10 @@ func (s *BackupService) BackupTradeFullToRemote() error {
 		HashVer:      hashVer,
 		FileList:     []entity.FileNameWithHash{},
 	}
-
+	defer s.fileOperator.RemoveFile(entity.File{
+		Name:    "*",
+		DirPath: out,
+	})
 	s.transmitter.CreateRemoteDir(remoteDir)
 
 	for _, productId := range productToBackup {
@@ -249,6 +252,10 @@ func (s *BackupService) BackupProductFullToRemote(id string) error {
 		HashVer:      hashVer,
 		BackupDbList: []string{id},
 	}
+	defer s.fileOperator.RemoveFile(entity.File{
+		Name:    "*",
+		DirPath: out,
+	})
 
 	s.transmitter.CreateRemoteDir(remoteDir)
 
