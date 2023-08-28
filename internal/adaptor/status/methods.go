@@ -1,8 +1,8 @@
 package status
 
 import (
-	grpcapi "github.com/Goboolean/manager-cli/infrastructure/grpc/props"
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
+	grpcapi "github.com/Goboolean/manager-cli/internal/infrastructure/grpc/props"
 )
 
 // This method returns status of a product

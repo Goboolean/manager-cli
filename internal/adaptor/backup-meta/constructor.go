@@ -1,6 +1,6 @@
 package backupMeta
 
-import fileInf "github.com/Goboolean/manager-cli/infrastructure/file"
+import fileInf "github.com/Goboolean/manager-cli/internal/infrastructure/file"
 
 type BackupMetaAdaptor struct {
 	file *fileInf.FileInfra

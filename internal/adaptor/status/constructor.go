@@ -5,7 +5,7 @@ import (
 	"errors"
 	"os"
 
-	grpcapi "github.com/Goboolean/manager-cli/infrastructure/grpc/props"
+	grpcapi "github.com/Goboolean/manager-cli/internal/infrastructure/grpc/props"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

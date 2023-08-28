@@ -4,7 +4,6 @@ import (
 	"os"
 	"testing"
 
-	fileInf "github.com/Goboolean/manager-cli/infrastructure/file"
 	backupMeta "github.com/Goboolean/manager-cli/internal/adaptor/backup-meta"
 	"github.com/Goboolean/manager-cli/internal/adaptor/file"
 	productMetaRepoMock "github.com/Goboolean/manager-cli/internal/adaptor/product-meta-repo/mock"
@@ -12,6 +11,7 @@ import (
 	transactionCreatorMock "github.com/Goboolean/manager-cli/internal/adaptor/transaction-manager/transaction-creator/mock"
 	transmissionMock "github.com/Goboolean/manager-cli/internal/adaptor/transmittion/mock"
 	"github.com/Goboolean/manager-cli/internal/domain/service/backup"
+	fileInf "github.com/Goboolean/manager-cli/internal/infrastructure/file"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	mongoInf "github.com/Goboolean/manager-cli/infrastructure/mongo"
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
+	mongoInf "github.com/Goboolean/manager-cli/internal/infrastructure/mongo"
 )
 
 // This method dumps trade data of specific product created before time
