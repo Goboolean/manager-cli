@@ -43,12 +43,12 @@ func (s *BackupService) BackupTradeFull() error {
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 	meta := entity.BackupMeta{
-		BackupType:   entity.DiffBackup,
-		BackupDbList: productToBackup,
-		Timestamp:    now.Unix(),
-		Date:         now.Format(toolTimeFormatString),
-		HashVer:      hashVer,
-		FileList:     []entity.FileNameWithHash{},
+		Type:        entity.FullBackup,
+		ProductList: productToBackup,
+		Timestamp:   now.Unix(),
+		Date:        now.Format(toolTimeFormatString),
+		HashVer:     hashVer,
+		FileList:    []entity.FileNameWithHash{},
 	}
 
 	for _, productId := range productToBackup {
@@ -99,12 +99,12 @@ func (s *BackupService) BackupTradeFullToRemote() error {
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 	remoteDir := "/" + now.Format(toolTimeFormatString)
 	meta := entity.BackupMeta{
-		BackupType:   entity.DiffBackup,
-		BackupDbList: productToBackup,
-		Timestamp:    now.Unix(),
-		Date:         now.Format(toolTimeFormatString),
-		HashVer:      hashVer,
-		FileList:     []entity.FileNameWithHash{},
+		Type:        entity.FullBackup,
+		ProductList: productToBackup,
+		Timestamp:   now.Unix(),
+		Date:        now.Format(toolTimeFormatString),
+		HashVer:     hashVer,
+		FileList:    []entity.FileNameWithHash{},
 	}
 	defer s.fileOperator.RemoveFile(entity.File{
 		Name:    "*",
@@ -181,11 +181,11 @@ func (s *BackupService) BackupProductFull(id string) error {
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 	meta := entity.BackupMeta{
-		BackupType:   entity.FullBackup,
-		Timestamp:    now.Unix(),
-		Date:         now.Format(toolTimeFormatString),
-		HashVer:      hashVer,
-		BackupDbList: []string{id},
+		Type:        entity.FullBackup,
+		Timestamp:   now.Unix(),
+		Date:        now.Format(toolTimeFormatString),
+		HashVer:     hashVer,
+		ProductList: []string{id},
 	}
 
 	f, err := s.tradeDumper.DumpProductBefore(id, out, now)
@@ -246,11 +246,11 @@ func (s *BackupService) BackupProductFullToRemote(id string) error {
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 	remoteDir := "/" + now.Format(toolTimeFormatString)
 	meta := entity.BackupMeta{
-		BackupType:   entity.FullBackup,
-		Timestamp:    now.Unix(),
-		Date:         now.Format(toolTimeFormatString),
-		HashVer:      hashVer,
-		BackupDbList: []string{id},
+		Type:        entity.FullBackup,
+		Timestamp:   now.Unix(),
+		Date:        now.Format(toolTimeFormatString),
+		HashVer:     hashVer,
+		ProductList: []string{id},
 	}
 	defer s.fileOperator.RemoveFile(entity.File{
 		Name:    "*",
