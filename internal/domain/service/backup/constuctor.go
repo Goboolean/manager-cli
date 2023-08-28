@@ -32,11 +32,12 @@ func New(
 	outDir string) *BackupService {
 
 	return &BackupService{
-		txCreator:    transactionCreator,
-		tradeDumper:  tradeRepoPort,
-		metadataRepo: metadataRepoPort,
-		transmitter:  transmitter,
-		fileOperator: fileRemover,
-		backUpDir:    outDir,
+		txCreator:      transactionCreator,
+		tradeDumper:    tradeRepoPort,
+		metadataRepo:   metadataRepoPort,
+		transmitter:    transmitter,
+		fileOperator:   fileRemover,
+		backupMetaPort: backupMeta,
+		backUpDir:      outDir,
 	}
 }
