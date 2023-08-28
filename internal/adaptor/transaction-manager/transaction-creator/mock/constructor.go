@@ -1,4 +1,4 @@
-package transactionFactory
+package transactionCreatorMock
 
 type TransactionBuilder struct {
 }

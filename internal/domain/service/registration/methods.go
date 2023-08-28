@@ -11,7 +11,10 @@ func (s *RegistrationService) RegisterProduct(meta entity.ProductMeta) error {
 
 	var err error
 	ctx := context.TODO()
-	transactor := s.txCreator.CreateTransaction(ctx)
+	transactor, err := s.txCreator.CreateTransaction(ctx)
+	if err != nil {
+		return err
+	}
 
 	err = s.metaRepo.StoreProductMeta(ctx, transactor.TransactionExtractor(), meta)
 

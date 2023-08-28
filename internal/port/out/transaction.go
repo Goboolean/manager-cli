@@ -7,7 +7,7 @@ import (
 )
 
 type TransactionCreator interface {
-	CreateTransaction(ctx context.Context) TransactorPort
+	CreateTransaction(ctx context.Context) (TransactorPort, error)
 }
 
 type TransactorPort interface {

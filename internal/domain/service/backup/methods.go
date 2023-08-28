@@ -16,7 +16,10 @@ import (
 
 func (s *BackupService) getStoredProducts() ([]string, error) {
 	ctx := context.TODO()
-	tx := s.txCreator.CreateTransaction(ctx)
+	tx, err := s.txCreator.CreateTransaction(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	idList, err := s.metadataRepo.GetStoredProductList(ctx, tx.TransactionExtractor())
 	if err != nil {
@@ -40,12 +43,12 @@ func (s *BackupService) BackupTradeFull() error {
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 	meta := entity.BackupMeta{
-		BackupType:   entity.DiffBackup,
-		BackupDbList: productToBackup,
-		Timestamp:    now.Unix(),
-		Date:         now.Format(toolTimeFormatString),
-		HashVer:      hashVer,
-		FileList:     []entity.FileNameWithHash{},
+		Type:        entity.FullBackup,
+		ProductList: productToBackup,
+		Timestamp:   now.Unix(),
+		Date:        now.Format(toolTimeFormatString),
+		HashVer:     hashVer,
+		FileList:    []entity.FileNameWithHash{},
 	}
 
 	for _, productId := range productToBackup {
@@ -96,14 +99,17 @@ func (s *BackupService) BackupTradeFullToRemote() error {
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 	remoteDir := "/" + now.Format(toolTimeFormatString)
 	meta := entity.BackupMeta{
-		BackupType:   entity.DiffBackup,
-		BackupDbList: productToBackup,
-		Timestamp:    now.Unix(),
-		Date:         now.Format(toolTimeFormatString),
-		HashVer:      hashVer,
-		FileList:     []entity.FileNameWithHash{},
+		Type:        entity.FullBackup,
+		ProductList: productToBackup,
+		Timestamp:   now.Unix(),
+		Date:        now.Format(toolTimeFormatString),
+		HashVer:     hashVer,
+		FileList:    []entity.FileNameWithHash{},
 	}
-
+	defer s.fileOperator.RemoveFile(entity.File{
+		Name:    "*",
+		DirPath: out,
+	})
 	s.transmitter.CreateRemoteDir(remoteDir)
 
 	for _, productId := range productToBackup {
@@ -158,7 +164,10 @@ func (s *BackupService) BackupTradeDiffToRemote() error {
 // related to a specific product (identified by 'id') to the local storage.
 func (s *BackupService) BackupProductFull(id string) error {
 	ctx := context.TODO()
-	tx := s.txCreator.CreateTransaction(ctx)
+	tx, err := s.txCreator.CreateTransaction(ctx)
+	if err != nil {
+		return err
+	}
 
 	isStored, err := s.metadataRepo.IsProductStored(ctx, tx.TransactionExtractor(), id)
 
@@ -172,11 +181,11 @@ func (s *BackupService) BackupProductFull(id string) error {
 	now := time.Now()
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 	meta := entity.BackupMeta{
-		BackupType:   entity.FullBackup,
-		Timestamp:    now.Unix(),
-		Date:         now.Format(toolTimeFormatString),
-		HashVer:      hashVer,
-		BackupDbList: []string{id},
+		Type:        entity.FullBackup,
+		Timestamp:   now.Unix(),
+		Date:        now.Format(toolTimeFormatString),
+		HashVer:     hashVer,
+		ProductList: []string{id},
 	}
 
 	f, err := s.tradeDumper.DumpProductBefore(id, out, now)
@@ -219,7 +228,10 @@ func (s *BackupService) BackupProductDiff(id string) error {
 // related to a specific product (identified by 'id') to a remote storage.
 func (s *BackupService) BackupProductFullToRemote(id string) error {
 	ctx := context.TODO()
-	tx := s.txCreator.CreateTransaction(ctx)
+	tx, err := s.txCreator.CreateTransaction(ctx)
+	if err != nil {
+		return err
+	}
 
 	isStored, err := s.metadataRepo.IsProductStored(ctx, tx.TransactionExtractor(), id)
 
@@ -234,12 +246,16 @@ func (s *BackupService) BackupProductFullToRemote(id string) error {
 	out := strings.Join([]string{s.backUpDir, now.Format(toolTimeFormatString)}, "/")
 	remoteDir := "/" + now.Format(toolTimeFormatString)
 	meta := entity.BackupMeta{
-		BackupType:   entity.FullBackup,
-		Timestamp:    now.Unix(),
-		Date:         now.Format(toolTimeFormatString),
-		HashVer:      hashVer,
-		BackupDbList: []string{id},
+		Type:        entity.FullBackup,
+		Timestamp:   now.Unix(),
+		Date:        now.Format(toolTimeFormatString),
+		HashVer:     hashVer,
+		ProductList: []string{id},
 	}
+	defer s.fileOperator.RemoveFile(entity.File{
+		Name:    "*",
+		DirPath: out,
+	})
 
 	s.transmitter.CreateRemoteDir(remoteDir)
 
