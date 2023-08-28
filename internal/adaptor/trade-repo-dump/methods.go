@@ -33,14 +33,14 @@ func (a *TradeDumpAdaptor) DumpProductBefore(id string, outDir string, date time
 	}
 
 	fmgr := make([]entity.File, 2)
-	fmgr = append(fmgr, entity.File{
+	fmgr[0] = entity.File{
 		Name:    strings.Join([]string{id, ".bson.gz"}, ""),
 		DirPath: strings.Join([]string{outDir, a.Database}, "/"),
-	})
-	fmgr = append(fmgr, entity.File{
+	}
+	fmgr[1] = entity.File{
 		Name:    strings.Join([]string{id, ".metadata.json"}, ""),
 		DirPath: strings.Join([]string{outDir, a.Database}, "/"),
-	})
+	}
 
 	return fmgr, nil
 }
@@ -69,15 +69,14 @@ func (a *TradeDumpAdaptor) DumpProductBetween(id string, outDir string, from, to
 	}
 
 	fmgr := make([]entity.File, 2)
-	fmgr = append(fmgr, entity.File{
+	fmgr[0] = entity.File{
 		Name:    strings.Join([]string{id, ".bson.gz"}, ""),
 		DirPath: strings.Join([]string{outDir, a.Database}, "/"),
-	})
-
-	fmgr = append(fmgr, entity.File{
+	}
+	fmgr[1] = entity.File{
 		Name:    strings.Join([]string{id, ".metadata.json"}, ""),
 		DirPath: strings.Join([]string{outDir, a.Database}, "/"),
-	})
+	}
 
 	return fmgr, nil
 }
