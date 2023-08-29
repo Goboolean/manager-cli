@@ -3,7 +3,7 @@ package backup
 import "github.com/Goboolean/manager-cli/internal/port/out"
 
 // format date to yyyy-mm-dd_hh:mm:ss
-const toolTimeFormatString = "2006-01-02_15:04:05"
+const toolTimeFormatString = "2006-01-02_15h04m05s"
 
 const backupTypeFull = "f"
 const backupTypeDifferential = "d"
