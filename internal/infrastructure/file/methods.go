@@ -14,6 +14,15 @@ func (inf *FileInfra) RemoveFileOrDir(path string) error {
 	return os.Remove(path)
 }
 
+func (inf *FileInfra) IsDirExist(dir string) (bool, error) {
+	info, err := os.Stat(dir)
+	if err != nil {
+		return false, err
+	}
+
+	return info.IsDir(), nil
+}
+
 // This method retrieves a list of file names in the specified directory.
 func (inf *FileInfra) GetFileNameList(dir string) ([]string, error) {
 	dirInfo, err := os.ReadDir(dir)
@@ -30,6 +39,10 @@ func (inf *FileInfra) GetFileNameList(dir string) ([]string, error) {
 	}
 
 	return res, nil
+}
+
+func (inf *FileInfra) CreateDirectory(dir string) error {
+	return os.MkdirAll(dir, 0755)
 }
 
 // This method calculates the xxHash checksum for the file at the given path.

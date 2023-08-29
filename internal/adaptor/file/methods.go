@@ -6,6 +6,11 @@ import (
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
 )
 
+// This method check directory is exist or not
+func (a *FileAdaptor) IsDirExist(ctx context.Context, dir string) (bool, error) {
+	return a.file.IsDirExist(dir)
+}
+
 // This method get file list from a directory
 func (a *FileAdaptor) GetFileList(ctx context.Context, dir string) ([]entity.File, error) {
 	names, err := a.file.GetFileNameList(dir)
@@ -23,6 +28,10 @@ func (a *FileAdaptor) GetFileList(ctx context.Context, dir string) ([]entity.Fil
 	}
 
 	return res, nil
+}
+
+func (a *FileAdaptor) CreateDirectory(ctx context.Context, dir string) error {
+	return a.file.CreateDirectory(dir)
 }
 
 // This method remove file from local storage

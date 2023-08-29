@@ -1,6 +1,12 @@
 package status
 
-import "github.com/Goboolean/manager-cli/internal/port/out"
+import (
+	"errors"
+
+	"github.com/Goboolean/manager-cli/internal/port/out"
+)
+
+var InvalidStatus = errors.New("update status: invalid status")
 
 type StatusService struct {
 	status out.StatusPort
