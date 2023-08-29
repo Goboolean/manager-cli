@@ -79,7 +79,7 @@ func TestAdd(t *testing.T) {
 		}
 
 		//act
-		err := instance.RemoveStatus(
+		err := instance.AddStatus(
 			ctx,
 			targetId,
 			entity.ProductStatus{

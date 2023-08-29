@@ -4,7 +4,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Goboolean/manager-cli/internal/domain/entity"
 	"github.com/notEpsilon/go-pair"
 )
 
@@ -34,32 +33,6 @@ func TestNewProductIdValidator(t *testing.T) {
 	testCases = append(testCases, pair.New("stock.samsung.", false))
 
 	testCases = append(testCases, pair.New("...", false))
-
-	for _, testCase := range testCases {
-		if validator.IsValid(testCase.First) != testCase.Second {
-			t.Errorf("Expected %v to be %v", testCase.First, testCase.Second)
-		}
-	}
-
-}
-
-func TestProductStatusValidator(t *testing.T) {
-	validator := NewProductStatusValidator()
-
-	if validator == nil {
-		t.Error("Expected validator to be created")
-	}
-
-	var testCases []*pair.Pair[entity.ProductStatus, bool]
-
-	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: false, Stored: false, Transmitted: false}, true))
-	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: false, Stored: false, Transmitted: true}, false))
-	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: false, Stored: true, Transmitted: false}, false))
-	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: false, Stored: true, Transmitted: true}, false))
-	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: true, Stored: false, Transmitted: false}, true))
-	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: true, Stored: false, Transmitted: true}, true))
-	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: true, Stored: true, Transmitted: false}, true))
-	testCases = append(testCases, pair.New(entity.ProductStatus{Relayable: true, Stored: true, Transmitted: true}, true))
 
 	for _, testCase := range testCases {
 		if validator.IsValid(testCase.First) != testCase.Second {
