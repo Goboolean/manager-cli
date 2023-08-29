@@ -1,6 +1,7 @@
 package status_test
 
 import (
+	"context"
 	"testing"
 
 	statusMock "github.com/Goboolean/manager-cli/internal/adaptor/status/mock"
@@ -10,8 +11,10 @@ import (
 )
 
 var targetId string
+var ctx context.Context
 
 func TestMain(m *testing.M) {
+	ctx = context.Background()
 	targetId = "stock.apple.usa"
 	m.Run()
 }
@@ -25,24 +28,30 @@ func TestAdd(t *testing.T) {
 		instance = status.New(
 			statusAdpator,
 		)
-		if err := statusAdpator.SetStatus(targetId, entity.ProductStatus{
-			Relayable:   true,
-			Stored:      false,
-			Transmitted: false,
-		}); err != nil {
+		if err := statusAdpator.SetStatus(
+			ctx,
+			targetId,
+			entity.ProductStatus{
+				Relayable:   true,
+				Stored:      false,
+				Transmitted: false,
+			}); err != nil {
 			panic(err)
 		}
 
 		//act
 
-		err := instance.AddStatus(targetId, entity.ProductStatus{
-			Relayable:   true,
-			Stored:      true,
-			Transmitted: false,
-		})
+		err := instance.AddStatus(
+			ctx,
+			targetId,
+			entity.ProductStatus{
+				Relayable:   true,
+				Stored:      true,
+				Transmitted: false,
+			})
 
 		//assert
-		actual, _ := statusAdpator.GetStatus(targetId)
+		actual, _ := statusAdpator.GetStatus(ctx, targetId)
 		assert.NoError(t, err)
 		assert.Equal(t, entity.ProductStatus{
 			Relayable:   true,
@@ -59,20 +68,25 @@ func TestAdd(t *testing.T) {
 		instance = status.New(
 			statusAdpator,
 		)
-		if err := statusAdpator.SetStatus(targetId, entity.ProductStatus{
-			Relayable:   false,
-			Stored:      false,
-			Transmitted: false,
-		}); err != nil {
+		if err := statusAdpator.SetStatus(ctx,
+			targetId,
+			entity.ProductStatus{
+				Relayable:   false,
+				Stored:      false,
+				Transmitted: false,
+			}); err != nil {
 			panic(err)
 		}
 
 		//act
-		err := instance.RemoveStatus(targetId, entity.ProductStatus{
-			Relayable:   false,
-			Stored:      true,
-			Transmitted: false,
-		})
+		err := instance.RemoveStatus(
+			ctx,
+			targetId,
+			entity.ProductStatus{
+				Relayable:   false,
+				Stored:      true,
+				Transmitted: false,
+			})
 
 		assert.Error(t, err)
 
@@ -89,23 +103,29 @@ func TestRemove(t *testing.T) {
 		instance = status.New(
 			statusAdpator,
 		)
-		if err := statusAdpator.SetStatus(targetId, entity.ProductStatus{
-			Relayable:   true,
-			Stored:      true,
-			Transmitted: false,
-		}); err != nil {
+		if err := statusAdpator.SetStatus(
+			ctx,
+			targetId,
+			entity.ProductStatus{
+				Relayable:   true,
+				Stored:      true,
+				Transmitted: false,
+			}); err != nil {
 			panic(err)
 		}
 
 		//act
-		err := instance.RemoveStatus(targetId, entity.ProductStatus{
-			Relayable:   false,
-			Stored:      true,
-			Transmitted: false,
-		})
+		err := instance.RemoveStatus(
+			ctx,
+			targetId,
+			entity.ProductStatus{
+				Relayable:   false,
+				Stored:      true,
+				Transmitted: false,
+			})
 
 		//assert
-		actual, _ := statusAdpator.GetStatus(targetId)
+		actual, _ := statusAdpator.GetStatus(ctx, targetId)
 		assert.NoError(t, err)
 		assert.Equal(t, entity.ProductStatus{
 			Relayable:   true,
@@ -122,20 +142,26 @@ func TestRemove(t *testing.T) {
 		instance = status.New(
 			statusAdpator,
 		)
-		if err := statusAdpator.SetStatus(targetId, entity.ProductStatus{
-			Relayable:   true,
-			Stored:      true,
-			Transmitted: false,
-		}); err != nil {
+		if err := statusAdpator.SetStatus(
+			ctx,
+			targetId,
+			entity.ProductStatus{
+				Relayable:   true,
+				Stored:      true,
+				Transmitted: false,
+			}); err != nil {
 			panic(err)
 		}
 
 		//act
-		err := instance.RemoveStatus(targetId, entity.ProductStatus{
-			Relayable:   true,
-			Stored:      false,
-			Transmitted: false,
-		})
+		err := instance.RemoveStatus(
+			ctx,
+			targetId,
+			entity.ProductStatus{
+				Relayable:   true,
+				Stored:      false,
+				Transmitted: false,
+			})
 
 		assert.Error(t, err)
 
@@ -153,14 +179,17 @@ func TestSet(t *testing.T) {
 		)
 
 		//act
-		err := instance.SetStatus(targetId, entity.ProductStatus{
-			Relayable:   true,
-			Stored:      false,
-			Transmitted: true,
-		})
+		err := instance.SetStatus(
+			ctx,
+			targetId,
+			entity.ProductStatus{
+				Relayable:   true,
+				Stored:      false,
+				Transmitted: true,
+			})
 
 		//assert
-		actual, _ := statusAdpator.GetStatus(targetId)
+		actual, _ := statusAdpator.GetStatus(ctx, targetId)
 		assert.NoError(t, err)
 		assert.Equal(t, entity.ProductStatus{
 			Relayable:   true,
@@ -179,11 +208,14 @@ func TestSet(t *testing.T) {
 		)
 
 		//act
-		err := instance.SetStatus(targetId, entity.ProductStatus{
-			Relayable:   false,
-			Stored:      false,
-			Transmitted: true,
-		})
+		err := instance.SetStatus(
+			ctx,
+			targetId,
+			entity.ProductStatus{
+				Relayable:   false,
+				Stored:      false,
+				Transmitted: true,
+			})
 
 		//assert
 		assert.Error(t, err)
@@ -199,6 +231,7 @@ func TestGet(t *testing.T) {
 	)
 
 	statusAdpator.SetStatus(
+		ctx,
 		targetId,
 		entity.ProductStatus{
 			Relayable:   true,
@@ -207,7 +240,7 @@ func TestGet(t *testing.T) {
 		})
 
 	//act
-	res, err := instance.GetStatus(targetId)
+	res, err := instance.GetStatus(ctx, targetId)
 
 	assert.NoError(t, err)
 	assert.Equal(t, entity.ProductStatus{

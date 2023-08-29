@@ -1,6 +1,7 @@
 package tradeRepoDump
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -10,7 +11,7 @@ import (
 )
 
 // This method dumps trade data of specific product created before time
-func (a *TradeDumpAdaptor) DumpProductBefore(id string, outDir string, date time.Time) ([]entity.File, error) {
+func (a *TradeDumpAdaptor) DumpProductBefore(ctx context.Context, id string, outDir string, date time.Time) ([]entity.File, error) {
 
 	q := fmt.Sprintf(`'{startTime:{"$lte":%d}}'`, date.Unix())
 
@@ -46,7 +47,7 @@ func (a *TradeDumpAdaptor) DumpProductBefore(id string, outDir string, date time
 }
 
 // This method dumps trade data of specific product created between time\
-func (a *TradeDumpAdaptor) DumpProductBetween(id string, outDir string, from, to time.Time) ([]entity.File, error) {
+func (a *TradeDumpAdaptor) DumpProductBetween(ctx context.Context, id string, outDir string, from, to time.Time) ([]entity.File, error) {
 
 	q := fmt.Sprintf(`'{"startTime":{"$gt":%d,"lte":%d}}'`, from.Unix(), to.Unix())
 

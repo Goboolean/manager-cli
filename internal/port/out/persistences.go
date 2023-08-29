@@ -24,14 +24,14 @@ type MetadataRepositoryPort interface {
 
 type StatusPort interface {
 	// This method returns status of a product
-	GetStatus(id string) (entity.ProductStatus, error)
+	GetStatus(ctx context.Context, id string) (entity.ProductStatus, error)
 	// This method changes status of a product by "status" val
-	SetStatus(id string, status entity.ProductStatus) error
+	SetStatus(ctx context.Context, id string, status entity.ProductStatus) error
 }
 
 type TradeDumperPort interface {
 	// This method dumps trade data of specific product created before time
-	DumpProductBefore(id string, outDir string, time time.Time) ([]entity.File, error)
+	DumpProductBefore(ctx context.Context, id string, outDir string, time time.Time) ([]entity.File, error)
 	// This method dumps trade data of specific product created between time
-	DumpProductBetween(id string, outDir string, from, to time.Time) ([]entity.File, error)
+	DumpProductBetween(ctx context.Context, id string, outDir string, from, to time.Time) ([]entity.File, error)
 }

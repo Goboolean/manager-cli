@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"errors"
 	"regexp"
 	"strconv"
@@ -17,28 +18,28 @@ const (
 )
 
 // TODO: 함수가 너무 많아지면 옵션 구조체를 넘기는 방안도 생각해보기 클라이언트의 요구사항에 맟춰 변경 가능한 인터페이스
-func (a *CommandAdaptor) BackupTrade(backupType BackupType, isTransmitted bool) error {
+func (a *CommandAdaptor) BackupTrade(ctx context.Context, backupType BackupType, isTransmitted bool) error {
 	if backupType == FullBak && isTransmitted {
-		return a.backUpService.BackupTradeFullToRemote()
+		return a.backUpService.BackupTradeFullToRemote(ctx)
 	} else if backupType == DiffBak && isTransmitted {
-		return a.backUpService.BackupTradeDiffToRemote()
+		return a.backUpService.BackupTradeDiffToRemote(ctx)
 	} else if backupType == FullBak && !isTransmitted {
-		return a.backUpService.BackupTradeFull()
+		return a.backUpService.BackupTradeFull(ctx)
 	} else if backupType == DiffBak && !isTransmitted {
-		return a.backUpService.BackupTradeDiff()
+		return a.backUpService.BackupTradeDiff(ctx)
 	}
 	return nil
 }
 
-func (a *CommandAdaptor) BackupProduct(id string, backupType BackupType, isTransmitted bool) error {
+func (a *CommandAdaptor) BackupProduct(ctx context.Context, id string, backupType BackupType, isTransmitted bool) error {
 	if backupType == FullBak && isTransmitted {
-		return a.backUpService.BackupProductFullToRemote(id)
+		return a.backUpService.BackupProductFullToRemote(ctx, id)
 	} else if backupType == DiffBak && isTransmitted {
-		return a.backUpService.BackupProductDiffToRemote(id)
+		return a.backUpService.BackupProductDiffToRemote(ctx, id)
 	} else if backupType == FullBak && !isTransmitted {
-		return a.backUpService.BackupProductFull(id)
+		return a.backUpService.BackupProductFull(ctx, id)
 	} else if backupType == DiffBak && !isTransmitted {
-		return a.backUpService.BackupProductDiff(id)
+		return a.backUpService.BackupProductDiff(ctx, id)
 	}
 	return nil
 }
@@ -51,7 +52,7 @@ type RegisterParms struct {
 	Code     string
 }
 
-func (a *CommandAdaptor) Register(in RegisterParms) error {
+func (a *CommandAdaptor) Register(ctx context.Context, in RegisterParms) error {
 
 	if in.Location == "null" {
 		// Blank String indicates null
@@ -62,6 +63,7 @@ func (a *CommandAdaptor) Register(in RegisterParms) error {
 	id := strings.Join([]string{in.Type, in.Code, in.Location}, ".")
 
 	return a.regService.RegisterProduct(
+		ctx,
 		entity.ProductMeta{
 			Id:          id,
 			Name:        in.Name,
@@ -90,7 +92,7 @@ func (a *CommandAdaptor) Register(in RegisterParms) error {
 //	r: reliable
 //	s: stored
 //	t: transmitted
-func (a *CommandAdaptor) UpdateStatus(id string, desired string) error {
+func (a *CommandAdaptor) UpdateStatus(ctx context.Context, id string, desired string) error {
 	// TODO: Refactor to deduce complexity of control structure
 
 	if matched, _ := regexp.MatchString("^[0-7]{1}$", id); matched {
@@ -101,11 +103,14 @@ func (a *CommandAdaptor) UpdateStatus(id string, desired string) error {
 
 		TargetStatusMask, _ := strconv.ParseInt(desired, 10, 0)
 
-		return a.statusService.SetStatus(id, entity.ProductStatus{
-			Relayable:   TargetStatusMask&1<<2 >= 1,
-			Stored:      TargetStatusMask&1<<1 >= 1,
-			Transmitted: TargetStatusMask&1<<0 >= 1,
-		})
+		return a.statusService.SetStatus(
+			ctx,
+			id,
+			entity.ProductStatus{
+				Relayable:   TargetStatusMask&1<<2 >= 1,
+				Stored:      TargetStatusMask&1<<1 >= 1,
+				Transmitted: TargetStatusMask&1<<0 >= 1,
+			})
 
 	} else if matched, _ := regexp.MatchString("^(\\+|-|=)(r|s|t){1,3}$", id); matched {
 
@@ -131,11 +136,11 @@ func (a *CommandAdaptor) UpdateStatus(id string, desired string) error {
 		}
 
 		if arr[0] == '+' {
-			return a.statusService.AddStatus(id, TargetStatusEntity)
+			return a.statusService.AddStatus(ctx, id, TargetStatusEntity)
 		} else if arr[0] == '-' {
-			return a.statusService.RemoveStatus(id, TargetStatusEntity)
+			return a.statusService.RemoveStatus(ctx, id, TargetStatusEntity)
 		} else if arr[0] == '=' {
-			return a.statusService.SetStatus(id, TargetStatusEntity)
+			return a.statusService.SetStatus(ctx, id, TargetStatusEntity)
 		}
 
 	} else {
@@ -146,8 +151,8 @@ func (a *CommandAdaptor) UpdateStatus(id string, desired string) error {
 }
 
 // TODO: Change form of status which api requires
-func (a *CommandAdaptor) GetStatus(id string) (status string, err error) {
-	result, err := a.statusService.GetStatus(id)
+func (a *CommandAdaptor) GetStatus(ctx context.Context, id string) (status string, err error) {
+	result, err := a.statusService.GetStatus(ctx, id)
 
 	if err != err {
 		status = ""

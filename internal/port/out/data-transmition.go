@@ -1,10 +1,14 @@
 package out
 
-import "github.com/Goboolean/manager-cli/internal/domain/entity"
+import (
+	"context"
+
+	"github.com/Goboolean/manager-cli/internal/domain/entity"
+)
 
 type DataTransmitterPort interface {
 	//This method create remote directory
-	CreateRemoteDir(dir string) error
+	CreateRemoteDir(ctx context.Context, dir string) error
 	//This method transmit data to remote storage
-	TransmitDataToRemote(localFile entity.File, remoteDir string) error
+	TransmitDataToRemote(ctx context.Context, localFile entity.File, remoteDir string) error
 }

@@ -1,7 +1,6 @@
 package status
 
 import (
-	"context"
 	"errors"
 	"os"
 
@@ -18,7 +17,6 @@ var (
 
 type StatusAdaptor struct {
 	client grpcapi.StockConfiguratorClient
-	ctx    context.Context
 }
 
 func New() (*StatusAdaptor, error) {
@@ -38,7 +36,6 @@ func New() (*StatusAdaptor, error) {
 	client := grpcapi.NewStockConfiguratorClient(conn)
 	return &StatusAdaptor{
 		client: client,
-		ctx:    context.Background(),
 	}, nil
 
 }

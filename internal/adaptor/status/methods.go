@@ -1,14 +1,16 @@
 package status
 
 import (
+	"context"
+
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
 	grpcapi "github.com/Goboolean/manager-cli/internal/infrastructure/grpc/props"
 )
 
 // This method returns status of a product
-func (a *StatusAdaptor) GetStatus(id string) (entity.ProductStatus, error) {
+func (a *StatusAdaptor) GetStatus(ctx context.Context, id string) (entity.ProductStatus, error) {
 
-	config, err := a.client.GetStockConfigOne(a.ctx, &grpcapi.StockId{
+	config, err := a.client.GetStockConfigOne(ctx, &grpcapi.StockId{
 		StockId: id,
 	})
 
@@ -29,9 +31,9 @@ func (a *StatusAdaptor) GetStatus(id string) (entity.ProductStatus, error) {
 }
 
 // This method changes status of a product by "status" val
-func (a *StatusAdaptor) SetStatus(id string, status entity.ProductStatus) error {
+func (a *StatusAdaptor) SetStatus(ctx context.Context, id string, status entity.ProductStatus) error {
 
-	msg, err := a.client.UpdateStockConfigOne(a.ctx, &grpcapi.StockConfig{
+	msg, err := a.client.UpdateStockConfigOne(ctx, &grpcapi.StockConfig{
 		StockId:       id,
 		Relayable:     &grpcapi.OptionStatus{OptionStatus: mapBoolToOption(status.Relayable)},
 		Storeable:     &grpcapi.OptionStatus{OptionStatus: mapBoolToOption(status.Stored)},

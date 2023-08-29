@@ -1,6 +1,7 @@
 package backup_test
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -18,6 +19,7 @@ import (
 var instance backup.BackupService
 var fobj *file.FileAdaptor
 var outDir string
+var ctx context.Context
 
 func setUp() {
 
@@ -26,6 +28,7 @@ func setUp() {
 	fobj = file.New(fileinf)
 	outDir = `/home/lsjtop10/backup`
 
+	ctx = context.Background()
 	instance = *backup.New(
 		transactionCreatorMock.New(),
 		tradeRepoDumpMock.New(),
@@ -52,12 +55,12 @@ func TestBackupToLocal(t *testing.T) {
 
 	var err error
 	//act
-	err = instance.BackupTradeFull()
+	err = instance.BackupTradeFull(ctx)
 
 	//assert
 	assert.NoError(t, err)
 	assert.Condition(t, func() (success bool) {
-		res, err := fobj.GetFileList(outDir)
+		res, err := fobj.GetFileList(ctx, outDir)
 		if len(res) > 0 && err == nil {
 			return true
 		}

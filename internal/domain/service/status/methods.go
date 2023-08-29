@@ -1,20 +1,22 @@
 package status
 
 import (
+	"context"
+
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
 )
 
-func (s StatusService) SetStatus(id string, desired entity.ProductStatus) error {
+func (s StatusService) SetStatus(ctx context.Context, id string, desired entity.ProductStatus) error {
 	//TODO: validate id
-	return s.status.SetStatus(id, desired)
+	return s.status.SetStatus(ctx, id, desired)
 }
 
 // RemoveStatus removes status(es) from a product identified by its ID.
-func (s StatusService) RemoveStatus(id string, desired entity.ProductStatus) error {
+func (s StatusService) RemoveStatus(ctx context.Context, id string, desired entity.ProductStatus) error {
 	//TODO: validate id
 	//TODO: validate desired
 
-	current, err := s.status.GetStatus(id)
+	current, err := s.status.GetStatus(ctx, id)
 
 	if err != nil {
 		return err
@@ -28,14 +30,14 @@ func (s StatusService) RemoveStatus(id string, desired entity.ProductStatus) err
 		Transmitted: current.Transmitted && !desired.Transmitted,
 	}
 
-	return s.status.SetStatus(id, newStatus)
+	return s.status.SetStatus(ctx, id, newStatus)
 }
 
 // AddStatus adds a status(es) to a product identified by its ID.
-func (s StatusService) AddStatus(id string, desired entity.ProductStatus) error {
+func (s StatusService) AddStatus(ctx context.Context, id string, desired entity.ProductStatus) error {
 	//TODO: validate id
 
-	current, err := s.status.GetStatus(id)
+	current, err := s.status.GetStatus(ctx, id)
 
 	if err != nil {
 		return err
@@ -48,11 +50,11 @@ func (s StatusService) AddStatus(id string, desired entity.ProductStatus) error 
 		Transmitted: current.Transmitted || desired.Transmitted,
 	}
 
-	return s.status.SetStatus(id, newStatus)
+	return s.status.SetStatus(ctx, id, newStatus)
 
 }
 
 // get status of a product and returns status entity object
-func (s StatusService) GetStatus(id string) (entity.ProductStatus, error) {
-	return s.status.GetStatus(id)
+func (s StatusService) GetStatus(ctx context.Context, id string) (entity.ProductStatus, error) {
+	return s.status.GetStatus(ctx, id)
 }

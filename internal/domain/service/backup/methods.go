@@ -14,8 +14,7 @@ import (
 // Consider adapting abstractions based on the evolving progress of this project.
 // However, avoid abstracting too hastily, as incorrect abstractions can make code maintenance more challenging.
 
-func (s *BackupService) getStoredProducts() ([]string, error) {
-	ctx := context.TODO()
+func (s *BackupService) getStoredProducts(ctx context.Context) ([]string, error) {
 	tx, err := s.txCreator.CreateTransaction(ctx)
 	if err != nil {
 		return nil, err
@@ -34,8 +33,8 @@ func (s *BackupService) getStoredProducts() ([]string, error) {
 	return idList, err
 }
 
-func (s *BackupService) BackupTradeFull() error {
-	productToBackup, err := s.getStoredProducts()
+func (s *BackupService) BackupTradeFull(ctx context.Context) error {
+	productToBackup, err := s.getStoredProducts(ctx)
 	if err != nil {
 		return err
 	}
@@ -52,13 +51,13 @@ func (s *BackupService) BackupTradeFull() error {
 	}
 
 	for _, productId := range productToBackup {
-		f, err := s.tradeDumper.DumpProductBefore(productId, out, now)
+		f, err := s.tradeDumper.DumpProductBefore(ctx, productId, out, now)
 		if err != nil {
 			return err
 		}
 
 		for i := range f {
-			h, err := s.fileOperator.CalculateFileHash(f[i])
+			h, err := s.fileOperator.CalculateFileHash(ctx, f[i])
 			if err != nil {
 				return err
 			}
@@ -75,7 +74,7 @@ func (s *BackupService) BackupTradeFull() error {
 		DirPath: out,
 	}
 
-	err = s.backupMetaPort.StoreBackupMeta(meta, metaFile)
+	err = s.backupMetaPort.StoreBackupMeta(ctx, meta, metaFile)
 	if err != nil {
 		return err
 	}
@@ -84,13 +83,13 @@ func (s *BackupService) BackupTradeFull() error {
 }
 
 // BackupTradeDiff backs up the differential trade data of last full backup to the local storage.
-func (s *BackupService) BackupTradeDiff() error {
+func (s *BackupService) BackupTradeDiff(ctx context.Context) error {
 	panic("not implemented") // TODO: Implement
 }
 
 // BackupTradeFullToRemote backs up all trade data to a remote storage.
-func (s *BackupService) BackupTradeFullToRemote() error {
-	productToBackup, err := s.getStoredProducts()
+func (s *BackupService) BackupTradeFullToRemote(ctx context.Context) error {
+	productToBackup, err := s.getStoredProducts(ctx)
 	if err != nil {
 		return err
 	}
@@ -106,26 +105,29 @@ func (s *BackupService) BackupTradeFullToRemote() error {
 		HashVer:     hashVer,
 		FileList:    []entity.FileNameWithHash{},
 	}
-	defer s.fileOperator.RemoveFile(entity.File{
-		Name:    "*",
-		DirPath: out,
-	})
-	s.transmitter.CreateRemoteDir(remoteDir)
+	defer s.fileOperator.RemoveFile(
+		ctx,
+		entity.File{
+			Name:    "*",
+			DirPath: out,
+		})
+
+	s.transmitter.CreateRemoteDir(ctx, remoteDir)
 
 	for _, productId := range productToBackup {
-		f, err := s.tradeDumper.DumpProductBefore(productId, out, now)
+		f, err := s.tradeDumper.DumpProductBefore(ctx, productId, out, now)
 		if err != nil {
 			return err
 		}
 
 		for i := range f {
 
-			h, err := s.fileOperator.CalculateFileHash(f[i])
+			h, err := s.fileOperator.CalculateFileHash(ctx, f[i])
 			if err != nil {
 				return err
 			}
 
-			err = s.transmitter.TransmitDataToRemote(f[i], remoteDir)
+			err = s.transmitter.TransmitDataToRemote(ctx, f[i], remoteDir)
 			if err != nil {
 				return err
 			}
@@ -142,12 +144,12 @@ func (s *BackupService) BackupTradeFullToRemote() error {
 		DirPath: out,
 	}
 
-	s.backupMetaPort.StoreBackupMeta(meta, metaFile)
+	s.backupMetaPort.StoreBackupMeta(ctx, meta, metaFile)
 	if err != nil {
 		return err
 	}
 
-	s.transmitter.TransmitDataToRemote(metaFile, remoteDir)
+	s.transmitter.TransmitDataToRemote(ctx, metaFile, remoteDir)
 	if err != nil {
 		return err
 	}
@@ -156,14 +158,13 @@ func (s *BackupService) BackupTradeFullToRemote() error {
 }
 
 // BackupTradeDiffToRemote backs up the differential trade data to a remote storage.
-func (s *BackupService) BackupTradeDiffToRemote() error {
+func (s *BackupService) BackupTradeDiffToRemote(ctx context.Context) error {
 	panic("not implemented") // TODO: Implement
 }
 
 // BackupProductFull backs up all trade data
 // related to a specific product (identified by 'id') to the local storage.
-func (s *BackupService) BackupProductFull(id string) error {
-	ctx := context.TODO()
+func (s *BackupService) BackupProductFull(ctx context.Context, id string) error {
 	tx, err := s.txCreator.CreateTransaction(ctx)
 	if err != nil {
 		return err
@@ -188,13 +189,13 @@ func (s *BackupService) BackupProductFull(id string) error {
 		ProductList: []string{id},
 	}
 
-	f, err := s.tradeDumper.DumpProductBefore(id, out, now)
+	f, err := s.tradeDumper.DumpProductBefore(ctx, id, out, now)
 	if err != nil {
 		return err
 	}
 
 	for i := range f {
-		h, err := s.fileOperator.CalculateFileHash(f[i])
+		h, err := s.fileOperator.CalculateFileHash(ctx, f[i])
 		if err != nil {
 			return err
 		} // BackupTradeFull backs up all trade data to the local storage.
@@ -210,7 +211,7 @@ func (s *BackupService) BackupProductFull(id string) error {
 		DirPath: out,
 	}
 
-	s.backupMetaPort.StoreBackupMeta(meta, MetadataFile)
+	s.backupMetaPort.StoreBackupMeta(ctx, meta, MetadataFile)
 	if err != nil {
 		return err
 	}
@@ -220,14 +221,13 @@ func (s *BackupService) BackupProductFull(id string) error {
 
 // BackupProductDiff backs up the differential trade data of last full backup
 // related to a specific product (identified by 'id') to the local storage.
-func (s *BackupService) BackupProductDiff(id string) error {
+func (s *BackupService) BackupProductDiff(ctx context.Context, id string) error {
 	panic("not implemented") // TODO: Implement
 }
 
 // BackupProductFullToRemote backs up all trade data
 // related to a specific product (identified by 'id') to a remote storage.
-func (s *BackupService) BackupProductFullToRemote(id string) error {
-	ctx := context.TODO()
+func (s *BackupService) BackupProductFullToRemote(ctx context.Context, id string) error {
 	tx, err := s.txCreator.CreateTransaction(ctx)
 	if err != nil {
 		return err
@@ -252,25 +252,27 @@ func (s *BackupService) BackupProductFullToRemote(id string) error {
 		HashVer:     hashVer,
 		ProductList: []string{id},
 	}
-	defer s.fileOperator.RemoveFile(entity.File{
-		Name:    "*",
-		DirPath: out,
-	})
+	defer s.fileOperator.RemoveFile(
+		ctx,
+		entity.File{
+			Name:    "*",
+			DirPath: out,
+		})
 
-	s.transmitter.CreateRemoteDir(remoteDir)
+	s.transmitter.CreateRemoteDir(ctx, remoteDir)
 
-	f, err := s.tradeDumper.DumpProductBefore(id, out, now)
+	f, err := s.tradeDumper.DumpProductBefore(ctx, id, out, now)
 	if err != nil {
 		return err
 	}
 
 	for i := range f {
-		err = s.transmitter.TransmitDataToRemote(f[i], remoteDir)
+		err = s.transmitter.TransmitDataToRemote(ctx, f[i], remoteDir)
 		if err != nil {
 			return err
 		}
 
-		h, err := s.fileOperator.CalculateFileHash(f[i])
+		h, err := s.fileOperator.CalculateFileHash(ctx, f[i])
 
 		if err != nil {
 			return err
@@ -287,13 +289,11 @@ func (s *BackupService) BackupProductFullToRemote(id string) error {
 		DirPath: out,
 	}
 
-	s.backupMetaPort.StoreBackupMeta(meta, MetadataFile)
-	if err != nil {
+	if err := s.backupMetaPort.StoreBackupMeta(ctx, meta, MetadataFile); err != nil {
 		return err
 	}
 
-	s.transmitter.TransmitDataToRemote(MetadataFile, remoteDir)
-	if err != nil {
+	if err := s.transmitter.TransmitDataToRemote(ctx, MetadataFile, remoteDir); err != nil {
 		return err
 	}
 
@@ -302,6 +302,6 @@ func (s *BackupService) BackupProductFullToRemote(id string) error {
 
 // BackupProductDiffToRemote backs up the differential trade data
 // related to a specific product (identified by 'id') to a remote storage.
-func (s *BackupService) BackupProductDiffToRemote(id string) error {
+func (s *BackupService) BackupProductDiffToRemote(ctx context.Context, id string) error {
 	panic("not implemented") // TODO: Implement
 }
