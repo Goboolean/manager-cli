@@ -2,12 +2,8 @@ package status
 
 import (
 	"errors"
-	"os"
 
 	grpcapi "github.com/Goboolean/manager-cli/internal/infrastructure/grpc/props"
-	"github.com/joho/godotenv"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
@@ -19,23 +15,9 @@ type StatusAdaptor struct {
 	client grpcapi.StockConfiguratorClient
 }
 
-func New() (*StatusAdaptor, error) {
-
-	os.Chdir("../../..")
-	godotenv.Load()
-
-	host := os.Getenv("GRPC_HOST")
-	port := os.Getenv("GRPC_PORT")
-
-	conn, err := grpc.Dial(host+":"+port, grpc.WithTransportCredentials(insecure.NewCredentials()))
-
-	if err != nil {
-		return nil, err
-	}
-
-	client := grpcapi.NewStockConfiguratorClient(conn)
+func New(client grpcapi.StockConfiguratorClient) *StatusAdaptor {
 	return &StatusAdaptor{
 		client: client,
-	}, nil
+	}
 
 }
