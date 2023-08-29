@@ -20,6 +20,8 @@ func (s *BackupService) getStoredProducts(ctx context.Context) ([]string, error)
 		return nil, err
 	}
 
+	s.fileOperator.CreateDirectory(ctx, s.backUpDir)
+
 	idList, err := s.metadataRepo.GetStoredProductList(ctx, tx.TransactionExtractor())
 	if err != nil {
 		return nil, err
@@ -37,6 +39,15 @@ func (s *BackupService) BackupTradeFull(ctx context.Context) error {
 	productToBackup, err := s.getStoredProducts(ctx)
 	if err != nil {
 		return err
+	}
+
+	isExist, err := s.fileOperator.IsDirExist(ctx, s.backUpDir)
+	if err != nil {
+		return err
+	}
+
+	if !isExist {
+		s.fileOperator.CreateDirectory(ctx, s.backUpDir)
 	}
 
 	now := time.Now()
@@ -92,6 +103,15 @@ func (s *BackupService) BackupTradeFullToRemote(ctx context.Context) error {
 	productToBackup, err := s.getStoredProducts(ctx)
 	if err != nil {
 		return err
+	}
+
+	isExist, err := s.fileOperator.IsDirExist(ctx, s.backUpDir)
+	if err != nil {
+		return err
+	}
+
+	if !isExist {
+		s.fileOperator.CreateDirectory(ctx, s.backUpDir)
 	}
 
 	now := time.Now()
@@ -170,6 +190,15 @@ func (s *BackupService) BackupProductFull(ctx context.Context, id string) error 
 		return err
 	}
 
+	isExist, err := s.fileOperator.IsDirExist(ctx, s.backUpDir)
+	if err != nil {
+		return err
+	}
+
+	if !isExist {
+		s.fileOperator.CreateDirectory(ctx, s.backUpDir)
+	}
+
 	isStored, err := s.metadataRepo.IsProductStored(ctx, tx.TransactionExtractor(), id)
 
 	if err != nil {
@@ -231,6 +260,15 @@ func (s *BackupService) BackupProductFullToRemote(ctx context.Context, id string
 	tx, err := s.txCreator.CreateTransaction(ctx)
 	if err != nil {
 		return err
+	}
+
+	isExist, err := s.fileOperator.IsDirExist(ctx, s.backUpDir)
+	if err != nil {
+		return err
+	}
+
+	if !isExist {
+		s.fileOperator.CreateDirectory(ctx, s.backUpDir)
 	}
 
 	isStored, err := s.metadataRepo.IsProductStored(ctx, tx.TransactionExtractor(), id)
