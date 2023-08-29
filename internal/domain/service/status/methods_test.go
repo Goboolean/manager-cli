@@ -24,11 +24,11 @@ func TestAdd(t *testing.T) {
 	t.Run("RemoveNormal", func(t *testing.T) {
 		//arrange
 		var instance *status.StatusService
-		statusAdpator, _ := statusMock.New()
+		statusAdaptor, _ := statusMock.New()
 		instance = status.New(
-			statusAdpator,
+			statusAdaptor,
 		)
-		if err := statusAdpator.SetStatus(
+		if err := statusAdaptor.SetStatus(
 			ctx,
 			targetId,
 			entity.ProductStatus{
@@ -51,7 +51,7 @@ func TestAdd(t *testing.T) {
 			})
 
 		//assert
-		actual, _ := statusAdpator.GetStatus(ctx, targetId)
+		actual, _ := statusAdaptor.GetStatus(ctx, targetId)
 		assert.NoError(t, err)
 		assert.Equal(t, entity.ProductStatus{
 			Relayable:   true,
@@ -64,11 +64,11 @@ func TestAdd(t *testing.T) {
 	t.Run("AddWithInvalid", func(t *testing.T) {
 		//arrange
 		var instance *status.StatusService
-		statusAdpator, _ := statusMock.New()
+		statusAdaptor, _ := statusMock.New()
 		instance = status.New(
-			statusAdpator,
+			statusAdaptor,
 		)
-		if err := statusAdpator.SetStatus(ctx,
+		if err := statusAdaptor.SetStatus(ctx,
 			targetId,
 			entity.ProductStatus{
 				Relayable:   false,
@@ -99,11 +99,11 @@ func TestRemove(t *testing.T) {
 	t.Run("RemoveNormal", func(t *testing.T) {
 		//arrange
 		var instance *status.StatusService
-		statusAdpator, _ := statusMock.New()
+		statusAdaptor, _ := statusMock.New()
 		instance = status.New(
-			statusAdpator,
+			statusAdaptor,
 		)
-		if err := statusAdpator.SetStatus(
+		if err := statusAdaptor.SetStatus(
 			ctx,
 			targetId,
 			entity.ProductStatus{
@@ -125,7 +125,7 @@ func TestRemove(t *testing.T) {
 			})
 
 		//assert
-		actual, _ := statusAdpator.GetStatus(ctx, targetId)
+		actual, _ := statusAdaptor.GetStatus(ctx, targetId)
 		assert.NoError(t, err)
 		assert.Equal(t, entity.ProductStatus{
 			Relayable:   true,
@@ -138,11 +138,11 @@ func TestRemove(t *testing.T) {
 	t.Run("RemoveWithInvalid", func(t *testing.T) {
 		//arrange
 		var instance *status.StatusService
-		statusAdpator, _ := statusMock.New()
+		statusAdaptor, _ := statusMock.New()
 		instance = status.New(
-			statusAdpator,
+			statusAdaptor,
 		)
-		if err := statusAdpator.SetStatus(
+		if err := statusAdaptor.SetStatus(
 			ctx,
 			targetId,
 			entity.ProductStatus{
@@ -173,9 +173,9 @@ func TestSet(t *testing.T) {
 	t.Run("SetNormal", func(t *testing.T) {
 		//arrange
 		var instance *status.StatusService
-		statusAdpator, _ := statusMock.New()
+		statusAdaptor, _ := statusMock.New()
 		instance = status.New(
-			statusAdpator,
+			statusAdaptor,
 		)
 
 		//act
@@ -189,7 +189,7 @@ func TestSet(t *testing.T) {
 			})
 
 		//assert
-		actual, _ := statusAdpator.GetStatus(ctx, targetId)
+		actual, _ := statusAdaptor.GetStatus(ctx, targetId)
 		assert.NoError(t, err)
 		assert.Equal(t, entity.ProductStatus{
 			Relayable:   true,
@@ -202,9 +202,9 @@ func TestSet(t *testing.T) {
 	t.Run("SetWithExpectedError", func(t *testing.T) {
 		//arrange
 		var instance *status.StatusService
-		statusAdpator, _ := statusMock.New()
+		statusAdaptor, _ := statusMock.New()
 		instance = status.New(
-			statusAdpator,
+			statusAdaptor,
 		)
 
 		//act
@@ -225,12 +225,12 @@ func TestSet(t *testing.T) {
 func TestGet(t *testing.T) {
 	//arrange
 	var instance *status.StatusService
-	statusAdpator, _ := statusMock.New()
+	statusAdaptor, _ := statusMock.New()
 	instance = status.New(
-		statusAdpator,
+		statusAdaptor,
 	)
 
-	statusAdpator.SetStatus(
+	statusAdaptor.SetStatus(
 		ctx,
 		targetId,
 		entity.ProductStatus{

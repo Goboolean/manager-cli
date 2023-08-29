@@ -10,7 +10,7 @@ import (
 	productMetaRepoMock "github.com/Goboolean/manager-cli/internal/adaptor/product-meta-repo/mock"
 	tradeRepoDumpMock "github.com/Goboolean/manager-cli/internal/adaptor/trade-repo-dump/mock"
 	transactionCreatorMock "github.com/Goboolean/manager-cli/internal/adaptor/transaction-manager/transaction-creator/mock"
-	transmissionMock "github.com/Goboolean/manager-cli/internal/adaptor/transmittion/mock"
+	transmissionMock "github.com/Goboolean/manager-cli/internal/adaptor/transmission/mock"
 	"github.com/Goboolean/manager-cli/internal/domain/service/backup"
 	fileInf "github.com/Goboolean/manager-cli/internal/infrastructure/file"
 	"github.com/stretchr/testify/assert"
