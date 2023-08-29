@@ -48,24 +48,45 @@ func TestMain(m *testing.M) {
 
 func TestBackupToLocal(t *testing.T) {
 
-	//arrange
+	t.Run("BackupTradeFull", func(t *testing.T) {
+		//arrange
+		os.RemoveAll(outDir)
+		os.MkdirAll(outDir, os.ModePerm)
 
-	os.RemoveAll(outDir)
-	os.MkdirAll(outDir, os.ModePerm)
+		var err error
+		//act
+		err = instance.BackupTradeFull(ctx)
 
-	var err error
-	//act
-	err = instance.BackupTradeFull(ctx)
-
-	//assert
-	assert.NoError(t, err)
-	assert.Condition(t, func() (success bool) {
-		res, err := fobj.GetFileList(ctx, outDir)
-		if len(res) > 0 && err == nil {
-			return true
-		}
-		return false
+		//assert
+		assert.NoError(t, err)
+		assert.Condition(t, func() (success bool) {
+			res, err := fobj.GetFileList(ctx, outDir)
+			if len(res) > 0 && err == nil {
+				return true
+			}
+			return false
+		})
 	})
+
+	t.Run("BackupTradeFull with out out dir", func(t *testing.T) {
+		//arrange
+		//os.RemoveAll(outDir)
+
+		var err error
+		//act
+		err = instance.BackupTradeFull(ctx)
+
+		//assert
+		assert.NoError(t, err)
+		assert.Condition(t, func() (success bool) {
+			res, err := fobj.GetFileList(ctx, outDir)
+			if len(res) > 0 && err == nil {
+				return true
+			}
+			return false
+		})
+	})
+
 }
 
 func tearDown() {
