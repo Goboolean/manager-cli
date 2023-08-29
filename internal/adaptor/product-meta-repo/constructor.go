@@ -1,7 +1,7 @@
 package productMetaRepo
 
 import (
-	"github.com/Goboolean/manager-cli/infrastructure/rdbms"
+	"github.com/Goboolean/manager-cli/internal/infrastructure/rdbms"
 )
 
 type MetadataRepositoryAdaptor struct {

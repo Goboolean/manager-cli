@@ -1,16 +1,17 @@
 package tradeRepoDump
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
 
-	mongoInf "github.com/Goboolean/manager-cli/infrastructure/mongo"
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
+	mongoInf "github.com/Goboolean/manager-cli/internal/infrastructure/mongo"
 )
 
 // This method dumps trade data of specific product created before time
-func (a *TradeDumpAdaptor) DumpProductBefore(id string, outDir string, date time.Time) ([]entity.File, error) {
+func (a *TradeDumpAdaptor) DumpProductBefore(ctx context.Context, id string, outDir string, date time.Time) ([]entity.File, error) {
 
 	q := fmt.Sprintf(`'{startTime:{"$lte":%d}}'`, date.Unix())
 
@@ -33,20 +34,20 @@ func (a *TradeDumpAdaptor) DumpProductBefore(id string, outDir string, date time
 	}
 
 	fmgr := make([]entity.File, 2)
-	fmgr = append(fmgr, entity.File{
+	fmgr[0] = entity.File{
 		Name:    strings.Join([]string{id, ".bson.gz"}, ""),
 		DirPath: strings.Join([]string{outDir, a.Database}, "/"),
-	})
-	fmgr = append(fmgr, entity.File{
+	}
+	fmgr[1] = entity.File{
 		Name:    strings.Join([]string{id, ".metadata.json"}, ""),
 		DirPath: strings.Join([]string{outDir, a.Database}, "/"),
-	})
+	}
 
 	return fmgr, nil
 }
 
 // This method dumps trade data of specific product created between time\
-func (a *TradeDumpAdaptor) DumpProductBetween(id string, outDir string, from, to time.Time) ([]entity.File, error) {
+func (a *TradeDumpAdaptor) DumpProductBetween(ctx context.Context, id string, outDir string, from, to time.Time) ([]entity.File, error) {
 
 	q := fmt.Sprintf(`'{"startTime":{"$gt":%d,"lte":%d}}'`, from.Unix(), to.Unix())
 
@@ -69,15 +70,14 @@ func (a *TradeDumpAdaptor) DumpProductBetween(id string, outDir string, from, to
 	}
 
 	fmgr := make([]entity.File, 2)
-	fmgr = append(fmgr, entity.File{
+	fmgr[0] = entity.File{
 		Name:    strings.Join([]string{id, ".bson.gz"}, ""),
 		DirPath: strings.Join([]string{outDir, a.Database}, "/"),
-	})
-
-	fmgr = append(fmgr, entity.File{
+	}
+	fmgr[1] = entity.File{
 		Name:    strings.Join([]string{id, ".metadata.json"}, ""),
 		DirPath: strings.Join([]string{outDir, a.Database}, "/"),
-	})
+	}
 
 	return fmgr, nil
 }

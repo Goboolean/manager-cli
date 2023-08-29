@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/Goboolean/manager-cli/infrastructure/rdbms"
 	transactionManager "github.com/Goboolean/manager-cli/internal/adaptor/transaction-manager"
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
+	"github.com/Goboolean/manager-cli/internal/infrastructure/rdbms"
 )
 
 // This method gets unique id of a product which can be hash, UUID and so on...

@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Goboolean/manager-cli/infrastructure/rdbms"
+	"github.com/Goboolean/manager-cli/internal/infrastructure/rdbms"
 	"github.com/Goboolean/shared/pkg/resolver"
 	"github.com/joho/godotenv"
 )

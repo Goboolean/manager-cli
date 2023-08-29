@@ -1,6 +1,7 @@
 package tradeRepoDumpMock
 
 import (
+	"context"
 	"os"
 	"path"
 	"strings"
@@ -9,7 +10,7 @@ import (
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
 )
 
-func createDummyFile(fList []entity.File) error {
+func createDummyFile(ctx context.Context, fList []entity.File) error {
 	for i := range fList {
 		f, err := os.Create(fList[i].FullPath())
 		defer f.Close()
@@ -24,7 +25,7 @@ func createDummyFile(fList []entity.File) error {
 }
 
 // This method dumps trade data of specific product created before time
-func (a *TradeDumpAdaptorMock) DumpProductBefore(id string, outDir string, date time.Time) ([]entity.File, error) {
+func (a *TradeDumpAdaptorMock) DumpProductBefore(ctx context.Context, id string, outDir string, date time.Time) ([]entity.File, error) {
 
 	var fmgr []entity.File
 	if err := os.MkdirAll(strings.Join([]string{outDir, a.database}, "/"), 0777); err != nil {
@@ -41,7 +42,7 @@ func (a *TradeDumpAdaptorMock) DumpProductBefore(id string, outDir string, date 
 		DirPath: strings.Join([]string{outDir, a.database}, "/"),
 	})
 
-	if err := createDummyFile(fmgr); err != nil {
+	if err := createDummyFile(ctx, fmgr); err != nil {
 		return nil, err
 	}
 
@@ -49,7 +50,7 @@ func (a *TradeDumpAdaptorMock) DumpProductBefore(id string, outDir string, date 
 }
 
 // This method dumps trade data of specific product created between time\
-func (a *TradeDumpAdaptorMock) DumpProductBetween(id string, outDir string, from, to time.Time) ([]entity.File, error) {
+func (a *TradeDumpAdaptorMock) DumpProductBetween(ctx context.Context, id string, outDir string, from, to time.Time) ([]entity.File, error) {
 	var fmgr []entity.File
 	os.MkdirAll(path.Base(outDir), 0777)
 
@@ -63,7 +64,7 @@ func (a *TradeDumpAdaptorMock) DumpProductBetween(id string, outDir string, from
 		DirPath: strings.Join([]string{outDir, a.database}, "/"),
 	})
 
-	if err := createDummyFile(fmgr); err != nil {
+	if err := createDummyFile(ctx, fmgr); err != nil {
 		return nil, err
 	}
 

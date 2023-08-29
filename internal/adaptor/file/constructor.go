@@ -1,6 +1,6 @@
 package file
 
-import fileInf "github.com/Goboolean/manager-cli/infrastructure/file"
+import fileInf "github.com/Goboolean/manager-cli/internal/infrastructure/file"
 
 type FileAdaptor struct {
 	file        *fileInf.FileInfra
