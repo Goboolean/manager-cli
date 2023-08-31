@@ -48,6 +48,10 @@ func NewDB(c *resolver.ConfigMap) (*PSQL, error) {
 		return nil, err
 	}
 
+	if err := db.Ping(); err != nil {
+		return nil, err
+	}
+
 	return &PSQL{
 		db: db,
 	}, nil
