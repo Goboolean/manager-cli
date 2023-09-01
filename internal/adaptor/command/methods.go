@@ -5,46 +5,39 @@ import (
 	"errors"
 	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/Goboolean/manager-cli/internal/domain/entity"
 )
 
-type BackupType int
-
-const (
-	FullBak BackupType = iota + 1
-	DiffBak
-)
-
 // TODO: 함수가 너무 많아지면 옵션 구조체를 넘기는 방안도 생각해보기 클라이언트의 요구사항에 맟춰 변경 가능한 인터페이스
-func (a *CommandAdaptor) BackupTrade(ctx context.Context, backupType BackupType, isTransmitted bool) error {
-	if backupType == FullBak && isTransmitted {
+func (a *CommandAdaptor) BackupTrade(ctx context.Context, backupType string, isTransmitted bool) error {
+	if backupType == "full" && isTransmitted {
 		return a.backUpService.BackupTradeFullToRemote(ctx)
-	} else if backupType == DiffBak && isTransmitted {
+	} else if backupType == "diff" && isTransmitted {
 		return a.backUpService.BackupTradeDiffToRemote(ctx)
-	} else if backupType == FullBak && !isTransmitted {
+	} else if backupType == "full" && !isTransmitted {
 		return a.backUpService.BackupTradeFull(ctx)
-	} else if backupType == DiffBak && !isTransmitted {
+	} else if backupType == "diff" && !isTransmitted {
 		return a.backUpService.BackupTradeDiff(ctx)
 	}
 	return nil
 }
 
-func (a *CommandAdaptor) BackupProduct(ctx context.Context, id string, backupType BackupType, isTransmitted bool) error {
-	if backupType == FullBak && isTransmitted {
+func (a *CommandAdaptor) BackupProduct(ctx context.Context, id string, backupType string, isTransmitted bool) error {
+	if backupType == "full" && isTransmitted {
 		return a.backUpService.BackupProductFullToRemote(ctx, id)
-	} else if backupType == DiffBak && isTransmitted {
+	} else if backupType == "diff" && isTransmitted {
 		return a.backUpService.BackupProductDiffToRemote(ctx, id)
-	} else if backupType == FullBak && !isTransmitted {
+	} else if backupType == "full" && !isTransmitted {
 		return a.backUpService.BackupProductFull(ctx, id)
-	} else if backupType == DiffBak && !isTransmitted {
+	} else if backupType == "diff" && !isTransmitted {
 		return a.backUpService.BackupProductDiff(ctx, id)
 	}
 	return nil
 }
 
 type RegisterParms struct {
+	Id       string
 	Type     string
 	Name     string
 	Location string
@@ -60,17 +53,15 @@ func (a *CommandAdaptor) Register(ctx context.Context, in RegisterParms) error {
 		in.Location = entity.NullString
 	}
 
-	id := strings.Join([]string{in.Type, in.Code, in.Location}, ".")
-
 	return a.regService.RegisterProduct(
 		ctx,
 		entity.ProductMeta{
-			Id:          id,
+			Id:          in.Id,
 			Name:        in.Name,
 			Code:        in.Code,
 			Location:    in.Location,
 			Exchange:    in.Exchange,
-			Description: "",
+			Description: entity.NullString,
 			Type:        in.Type,
 		})
 }
