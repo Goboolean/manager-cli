@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/Goboolean/shared v0.0.0-20230717060802-49f66c2bee25
 	github.com/cespare/xxhash/v2 v2.2.0
+	github.com/google/wire v0.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/mongodb/mongo-tools v0.0.0-20230725134410-d7e15fd5376e
