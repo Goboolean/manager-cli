@@ -142,26 +142,32 @@ func (a *CommandAdaptor) UpdateStatus(ctx context.Context, id string, desired st
 }
 
 // TODO: Change form of status which api requires
-func (a *CommandAdaptor) GetStatus(ctx context.Context, id string) (status string, err error) {
+func (a *CommandAdaptor) GetStatus(ctx context.Context, id string) (string, error) {
 	result, err := a.statusService.GetStatus(ctx, id)
+	var status string
 
-	if err != err {
-		status = ""
-		return
+	if err != nil {
+		return "", err
 	}
 
 	if result.Relayable {
 		status += "r"
+	} else {
+		status += "-"
 	}
 
 	if result.Stored {
 		status += "s"
+	} else {
+		status += "-"
 	}
 
 	if result.Transmitted {
 		status += "t"
+	} else {
+		status += "-"
 	}
 
-	return
+	return status, nil
 
 }
