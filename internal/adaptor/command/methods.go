@@ -86,7 +86,7 @@ func (a *CommandAdaptor) Register(ctx context.Context, in RegisterParms) error {
 func (a *CommandAdaptor) UpdateStatus(ctx context.Context, id string, desired string) error {
 	// TODO: Refactor to deduce complexity of control structure
 
-	if matched, _ := regexp.MatchString("^[0-7]{1}$", id); matched {
+	if matched, _ := regexp.MatchString("^[0-7]{1}$", desired); matched {
 		// If desired is dial, it is a Bit mark of target status.
 		// First bit from the rightmost represents whether a product is relayable(1) or not(0),
 		// and Second bit does whether a product is being stored or not,
@@ -103,7 +103,7 @@ func (a *CommandAdaptor) UpdateStatus(ctx context.Context, id string, desired st
 				Transmitted: TargetStatusMask&1<<0 >= 1,
 			})
 
-	} else if matched, _ := regexp.MatchString("^(\\+|-|=)(r|s|t){1,3}$", id); matched {
+	} else if matched, _ := regexp.MatchString("^(\\+|-|=)(r|s|t){1,3}$", desired); matched {
 
 		// If desired is string literal, it consist of operator and status(es)
 		// The statues(es) is appended after the operator to indicate the desired action
