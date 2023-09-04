@@ -138,7 +138,7 @@ func TestStatus(t *testing.T) {
 		// assert
 		assert.NoError(t, err)
 		res, _ := instance.GetStatus(ctx, testProductId)
-		assert.Equal(t, "r", res)
+		assert.Equal(t, "r--", res)
 	})
 
 	t.Run("Remove status with invaild", func(t *testing.T) {
