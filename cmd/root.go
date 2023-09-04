@@ -4,6 +4,9 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"github.com/Goboolean/manager-cli/inject"
+	"github.com/Goboolean/manager-cli/internal/adaptor/command"
+	"github.com/Goboolean/manager-cli/util/env"
 	"github.com/spf13/cobra"
 )
 
@@ -27,10 +30,20 @@ func Execute() {
 
 }
 
+var CommandAdaptor *command.CommandAdaptor
+
 func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
+
+	env.Init()
+	var err error
+	CommandAdaptor, err = inject.InitCommandAdaptor()
+
+	if err != nil {
+		panic(err)
+	}
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.manager-cli.yaml)")
 

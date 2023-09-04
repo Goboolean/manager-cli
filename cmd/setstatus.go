@@ -4,14 +4,14 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
+	"context"
 
 	"github.com/spf13/cobra"
 )
 
 // setstatusCmd represents the setstatus command
 var setstatusCmd = &cobra.Command{
-	Use:   "setstatus {status} {stockId}",
+	Use:   "status {ProductId} {Operation}",
 	Short: "Change the status of a specific stock",
 	Long:  ``,
 
@@ -28,7 +28,11 @@ var setstatusCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("setstatus called")
+		ctx := context.TODO()
+		if err := CommandAdaptor.UpdateStatus(ctx, args[0], args[1]); err != nil {
+			println(err.Error())
+		}
+
 	},
 }
 

@@ -4,12 +4,14 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"context"
+
 	"github.com/spf13/cobra"
 )
 
 // statusCmd represents the status command
 var statusCmd = &cobra.Command{
-	Use:   "status {stockId}",
+	Use:   "get-status {ProductId}",
 	Short: "Show stock status",
 	Long: `
 	{stockID} is the unique code of each stock.
@@ -27,7 +29,13 @@ var statusCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
+		ctx := context.TODO()
+		res, err := CommandAdaptor.GetStatus(ctx, args[0])
+		println(res)
 
+		if err != nil {
+			println(err.Error())
+		}
 	},
 }
 
