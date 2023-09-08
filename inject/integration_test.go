@@ -97,7 +97,7 @@ func TestStatus(t *testing.T) {
 		// assert
 		assert.NoError(t, err)
 		res, _ := instance.GetStatus(ctx, testProductId)
-		assert.Equal(t, res, "rst")
+		assert.Equal(t, "rst", res)
 	})
 
 	t.Run("Update status with invalid", func(t *testing.T) {
@@ -179,7 +179,7 @@ func TestStatus(t *testing.T) {
 		// assert
 		assert.NoError(t, err)
 		res, _ := instance.GetStatus(ctx, testProductId)
-		assert.Equal(t, res, "")
+		assert.Equal(t, "---", res)
 	})
 
 	t.Run("Update status with num: 5", func(t *testing.T) {
