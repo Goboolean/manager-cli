@@ -98,9 +98,9 @@ func (a *CommandAdaptor) UpdateStatus(ctx context.Context, id string, desired st
 			ctx,
 			id,
 			entity.ProductStatus{
-				Relayable:   TargetStatusMask&1<<2 >= 1,
-				Stored:      TargetStatusMask&1<<1 >= 1,
-				Transmitted: TargetStatusMask&1<<0 >= 1,
+				Relayable:   TargetStatusMask&(1<<2) > 0,
+				Stored:      TargetStatusMask&(1<<1) > 0,
+				Transmitted: TargetStatusMask&(1<<0) > 0,
 			})
 
 	} else if matched, _ := regexp.MatchString("^(\\+|-|=)(r|s|t){1,3}$", desired); matched {
