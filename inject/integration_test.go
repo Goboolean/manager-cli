@@ -100,6 +100,27 @@ func TestStatus(t *testing.T) {
 		assert.Equal(t, "rst", res)
 	})
 
+	t.Run("Update status", func(t *testing.T) {
+		ctx := context.TODO()
+		// arrange
+		instance, err := inject.InitCommandAdaptor()
+		if err != nil {
+			panic(err)
+		}
+
+		/*err = instance.UpdateStatus(ctx, "stock.apple.usa", "-rst")
+		if err != nil {
+			panic(err)
+		}*/
+
+		// act
+		err = instance.UpdateStatus(ctx, testProductId, "=rt")
+		// assert
+		assert.NoError(t, err)
+		res, _ := instance.GetStatus(ctx, testProductId)
+		assert.Equal(t, "r-t", res)
+	})
+
 	t.Run("Update status with invalid", func(t *testing.T) {
 		ctx := context.TODO()
 		// arrange
@@ -200,7 +221,7 @@ func TestStatus(t *testing.T) {
 		// assert
 		assert.NoError(t, err)
 		res, _ := instance.GetStatus(ctx, testProductId)
-		assert.Equal(t, res, "r-t")
+		assert.Equal(t, "r-t", res)
 	})
 
 	t.Run("Update status with num expected error", func(t *testing.T) {
