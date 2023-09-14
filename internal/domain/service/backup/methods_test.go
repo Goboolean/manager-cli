@@ -68,9 +68,9 @@ func TestBackupToLocal(t *testing.T) {
 		})
 	})
 
-	t.Run("BackupTradeFull with out out dir", func(t *testing.T) {
+	t.Run("BackupTradeFull without out dir", func(t *testing.T) {
 		//arrange
-		//os.RemoveAll(outDir)
+		os.RemoveAll(outDir)
 
 		var err error
 		//act

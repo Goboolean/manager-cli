@@ -18,3 +18,5 @@ sqlc-generate:
 	
 sqlc-check:
 	sqlc compile -f api/sql/sqlc.yml
+wire-gen:
+	wire ./inject/wire.go

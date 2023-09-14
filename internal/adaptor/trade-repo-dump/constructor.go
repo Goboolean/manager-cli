@@ -1,16 +1,17 @@
 package tradeRepoDump
 
-import "github.com/Goboolean/shared/pkg/resolver"
+import (
+	"fmt"
+
+	"github.com/Goboolean/shared/pkg/resolver"
+)
 
 type TradeDumpAdaptor struct {
-	User     string
-	PassWord string
-	Host     string
-	Port     string
-	Database string
+	connUri  string
+	database string
 }
 
-func New(c *resolver.ConfigMap, outDir string) (*TradeDumpAdaptor, error) {
+func New(c *resolver.ConfigMap) (*TradeDumpAdaptor, error) {
 
 	user, err := c.GetStringKey("USER")
 	if err != nil {
@@ -37,11 +38,12 @@ func New(c *resolver.ConfigMap, outDir string) (*TradeDumpAdaptor, error) {
 		return nil, err
 	}
 
+	uri := fmt.Sprintf(
+		"mongodb://%s:%s@%s:%s/?authSource=%s&directConnection=true",
+		user, password, host, port, database)
+
 	return &TradeDumpAdaptor{
-		User:     user,
-		PassWord: password,
-		Host:     host,
-		Port:     port,
-		Database: database,
+		connUri:  uri,
+		database: database,
 	}, nil
 }

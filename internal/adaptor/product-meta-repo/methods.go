@@ -67,10 +67,10 @@ func (a *MetadataRepositoryAdaptor) StoreProductMeta(
 			ID:          meta.Id,
 			Name:        meta.Name,
 			Symbol:      meta.Code,
-			Description: sql.NullString{String: meta.Description, Valid: meta.Description != ""},
+			Description: sql.NullString{String: meta.Description, Valid: meta.Description != entity.NullString},
 			Type:        meta.Type,
 			Exchange:    meta.Exchange,
-			Location:    sql.NullString{String: meta.Location, Valid: meta.Location == entity.NullString},
+			Location:    sql.NullString{String: meta.Location, Valid: meta.Location != entity.NullString},
 		})
 }
 

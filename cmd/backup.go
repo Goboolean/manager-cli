@@ -4,14 +4,14 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
+	"context"
 
 	"github.com/spf13/cobra"
 )
 
 // backupCmd represents the backup command
 var backupCmd = &cobra.Command{
-	Use:   "backup",
+	Use:   "backup {ProductId(s)}",
 	Short: "backup stock data",
 	Long:  ``,
 
@@ -22,14 +22,23 @@ var backupCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
+		isDataToRemote, _ := cmd.Flags().GetBool("remote")
+		backupType, _ := cmd.Flags().GetString("type")
 
-		//Test code to verify if the flag variable is successfully inputted.
-		fmt.Println("flag input: " + cmd.Flag("input").Value.String())
-		fmt.Println("flag output: " + cmd.Flag("output").Value.String())
-		fmt.Println("flag before: " + cmd.Flag("before").Value.String())
+		var err error
 
-		//todo: call domain code.
-		fmt.Println("backup started")
+		ctx := context.TODO()
+		if len(args) == 0 {
+			err = CommandAdaptor.BackupTrade(ctx, backupType, isDataToRemote)
+		} else {
+			for _, item := range args {
+				err = CommandAdaptor.BackupProduct(ctx, item, backupType, isDataToRemote)
+			}
+		}
+
+		if err != nil {
+			print(err.Error())
+		}
 	},
 }
 
@@ -37,10 +46,9 @@ func init() {
 
 	rootCmd.AddCommand(backupCmd)
 
-	backupCmd.Flags().StringP("input", "i", "", "Target stock by [stockId]")
-	backupCmd.Flags().StringP("output", "o", "", "Name of backup file")
-	backupCmd.Flags().String("before", "", "Back up data created before yyyy/mm/dd")
-
+	backupCmd.Flags().StringP("type", "t", "full", "Type of backup. possible value: full, diff (required)")
+	backupCmd.Flags().BoolP("remote", "r", false, "Uploads backup(s) to remote")
+	regCmd.MarkFlagRequired("type")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

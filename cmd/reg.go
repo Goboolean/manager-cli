@@ -4,16 +4,17 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"context"
 	"errors"
-	"fmt"
 
+	"github.com/Goboolean/manager-cli/internal/adaptor/command"
 	"github.com/spf13/cobra"
 )
 
 // regCmd represents the reg command
 var regCmd = &cobra.Command{
-	Use:   "reg ",
-	Short: "Add a stock metadata to DB",
+	Use:   "reg {product-id}",
+	Short: "Store product metadata to metadata repo",
 	Long:  ``,
 
 	PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -28,20 +29,37 @@ var regCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("reg called")
+		ctx := context.TODO()
+
+		productType, _ := cmd.Flags().GetString("type")
+		productCode, _ := cmd.Flags().GetString("code")
+		productName, _ := cmd.Flags().GetString("name")
+		productLocation, _ := cmd.Flags().GetString("location")
+		productExchange, _ := cmd.Flags().GetString("exchange")
+
+		err := CommandAdaptor.Register(ctx, command.RegisterParms{
+			Id:       args[0],
+			Type:     productType,
+			Code:     productCode,
+			Name:     productName,
+			Location: productLocation,
+			Exchange: productExchange,
+		})
+
+		if err != nil {
+			print(err.Error())
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(regCmd)
 
-	regCmd.Flags().StringP("type", "t", "", "Type of product available: stock, coin")
-	regCmd.Flags().String("code", "", "Product code used in one's market")
-	regCmd.Flags().String("name", "", "English name of product")
+	regCmd.Flags().StringP("type", "t", "", "Type of product available: stock, coin (required)")
+	regCmd.Flags().String("code", "", "Product code used in one's market (required)")
+	regCmd.Flags().String("name", "", "Name of product in english (required)")
 	regCmd.Flags().String("location", "", "Country code defined in ISO 3166-1.")
 	regCmd.Flags().String("exchange", "", "Human readable exchange name")
-
-	regCmd.Flags().BoolP("auto", "a", false, "fetch stock metadata automatically")
 
 	regCmd.MarkFlagRequired("type")
 	regCmd.MarkFlagRequired("code")

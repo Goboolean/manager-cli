@@ -3,6 +3,7 @@ package rdbms
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/Goboolean/shared/pkg/resolver"
@@ -46,6 +47,10 @@ func NewDB(c *resolver.ConfigMap) (*PSQL, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	if err := db.Ping(); err != nil {
+		return nil, errors.New("sql: failed to connect to the server")
 	}
 
 	return &PSQL{

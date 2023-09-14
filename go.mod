@@ -3,15 +3,17 @@ module github.com/Goboolean/manager-cli
 go 1.19
 
 require (
-	github.com/Goboolean/shared v0.0.0-20230717060802-49f66c2bee25
+	github.com/Goboolean/shared v0.0.0-00010101000000-000000000000
 	github.com/cespare/xxhash/v2 v2.2.0
+	github.com/google/wire v0.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
-	github.com/mongodb/mongo-tools v0.0.0-20230725134410-d7e15fd5376e
+	github.com/mongodb/mongo-tools v0.0.0-20230816203804-9779cd4620f9
 	github.com/notEpsilon/go-pair v0.0.0-20221220200415-e91ef28c6c0b
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
-	google.golang.org/grpc v1.56.2
+	go.uber.org/zap v1.25.0
+	google.golang.org/grpc v1.54.0
 	google.golang.org/protobuf v1.31.0
 )
 
@@ -31,6 +33,7 @@ require (
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	go.mongodb.org/mongo-driver v1.12.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.12.0 // indirect
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29 // indirect
 	golang.org/x/net v0.14.0 // indirect

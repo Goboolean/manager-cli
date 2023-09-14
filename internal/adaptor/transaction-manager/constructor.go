@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/Goboolean/manager-cli/internal/infrastructure/rdbms"
 	"github.com/Goboolean/shared/pkg/mongo"
-	"github.com/Goboolean/shared/pkg/rdbms"
 	"github.com/Goboolean/shared/pkg/resolver"
 )
 

@@ -1,4 +1,5 @@
 **/.env
+/dump
 proxy-server/acme.json
 /.vscode
 /vendor
